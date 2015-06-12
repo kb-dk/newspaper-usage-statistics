@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<responsecollection
+        timing="avisersolr.connect:1|avisersolr.rawcall:295|avisersolr.search.buildresponses:2|avisersolr.search.total:298|adjuster_aviser.interactionadjuster.adjust.documents:0|adjuster_aviser.interactionadjuster.adjust.facets:0|adjuster_aviser.interactionadjuster.adjust.total:0|adjuster_aviser.request.rewrite:2|adjuster_aviser.response.adjust:0|adjuster_aviser.total:314|adjuster_aviser.aggregator.searchcall.aviser:314|sbsolr.connect:0|sbsolr.rawcall:60|sbsolr.search.buildresponses:3|sbsolr.search.total:64|interactionadjuster.adjust.documents:0|interactionadjuster.adjust.facets:0|interactionadjuster.adjust.total:0|adjustingsearchnode.total:66|adjuster_doms.interactionadjuster.adjust.documents:1|adjuster_doms.interactionadjuster.adjust.facets:1|adjuster_doms.interactionadjuster.adjust.total:1|adjuster_doms.request.rewrite:2|adjuster_doms.response.adjust:1|adjuster_doms.total:83|adjuster_doms.aggregator.searchcall.doms:83|solr.buildquery:0|sbsolr.reportedtime:56|sbsolr.buildresponses.total:3|responsemerger.merge:0|responsemerger.post:0|responsemerger.total:0|aggregator.searchandmergeall:315|searchws.outercall:315|solr.buildquery:0|avisersolr.reportedtime:291|avisersolr.buildresponses.total:1|avisersolr.buildresponses.facets:1|avisersolr.tagadjuster.adjusts.total:0|sbsolr.buildresponses.facets:2|sbsolr.tagadjuster.lma_long.adjust:0|sbsolr.tagadjuster.adjusts.total:0|sbsolr.tagadjuster.adjusts.total:0"
+        machine="miranda">
+    <response name="DocumentResponse">
+        <documentresult query="hest^0.25798354" startIndex="0" maxRecords="1" sortKey="summa-score" reverseSort="false"
+                        fields="" searchTime="291"
+                        timing="solr.buildquery:0|avisersolr.reportedtime:291|avisersolr.buildresponses.total:1"
+                        hitCount="225650">
+            <record score="0.78243303" sortValue="0.78243303"
+                    id="doms_newspaperCollection:uuid:4588d98c-3a20-4598-9a17-ca2a19f49045-segment_4"
+                    source="avisersolr">
+                <field name="pageUUID">doms_aviser_page:uuid:4588d98c-3a20-4598-9a17-ca2a19f49045</field>
+                <field name="authID">doms_aviser_page:uuid:4588d98c-3a20-4598-9a17-ca2a19f49045</field>
+                <field name="authID">doms_aviser_edition:uuid:884f632e-5fd4-4a11-894b-8bf15c58685b</field>
+                <field name="editionUUID">doms_aviser_edition:uuid:884f632e-5fd4-4a11-894b-8bf15c58685b</field>
+                <field name="titleUUID">doms_aviser_title:uuid:b61ed1a0-0684-4cbc-8e0a-23dd471c4f1a</field>
+                <field name="titleObjectExists">yes</field>
+                <field name="pageExists">yes</field>
+                <field name="recordID">doms_newspaperCollection:uuid:4588d98c-3a20-4598-9a17-ca2a19f49045-segment_4
+                </field>
+                <field name="recordBase">doms_aviser</field>
+                <field name="shortformat">
+                    <shortrecord>
+                        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                            <rdf:Description>
+                                <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Hest«</dc:title>
+                                <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/"/>
+                                <dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">1972</dc:date>
+                                <newspaperTitle>Bornholms Tidende (1866-)</newspaperTitle>
+                                <dateTime>1972-04-01</dateTime>
+                                <dateTimeIso>1972-04-01T00:00:00Z</dateTimeIso>
+                                <newspaperEdition>1</newspaperEdition>
+                                <newspaperSection>1. sektion</newspaperSection>
+                                <newspaperPage>14</newspaperPage>
+                                <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">
+                                    doms_newspaperCollection:uuid:4588d98c-3a20-4598-9a17-ca2a19f49045
+                                </dc:identifier>
+                                <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">
+                                    uuid:4588d98c-3a20-4598-9a17-ca2a19f49045
+                                </dc:identifier>
+                                <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="da">avisartikel</dc:type>
+                                <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">newspaper article
+                                </dc:type>
+                            </rdf:Description>
+                        </rdf:RDF>
+                    </shortrecord>
+                </field>
+                <field name="editionId">bornholmstidende 1972-04-01 1</field>
+                <field name="familyId">bornholmstidende</field>
+                <field name="lplace">Rønne</field>
+                <field name="newspaper_section">1. sektion</field>
+                <field name="newspaper_page">14</field>
+                <field name="newspaper_page_sort">0000014</field>
+                <field name="pwa">65.0</field>
+                <field name="pwa_sort">00065.0</field>
+                <field name="cer">0.35</field>
+                <field name="cer_sort">00000.35</field>
+                <field name="fulltext_org">Hest« DLK og Kreatureksportforeningerne Øre pr. kg lev. vægt Slagteheste,
+                    eksport Prima 390—410 1. klasse 370-390 1 Slagteheste, hjemmemarkedet I Prima 340-370 1. klasse
+                    310—340 Plage Prima 405—425 I 1. klasse 385-405 j Føl Svære 400 — 440 Små 340-380 For enkelte ekstra
+                    gode dyr betales der lidt mere, for rin gere efter værdi.
+                </field>
+                <field name="fulltext_org">Dødsfald</field>
+                <field name="fulltext_org">Min kære hustru, vor ejegode mor, mormor op oldemor Sofie Marie Kruse er gået
+                    hjem til Jesus.
+                </field>
+                <field name="fulltext_org">Fridal, Rutsker, den 29. marts 1972.</field>
+                <field name="fulltext_org">Victor Kruse og børnene.</field>
+                <field name="fulltext_org">Begravelsen har fundet sted.</field>
+                <field name="fulltext_org">Mejerinoteringen De danske Mejeriforeningers notering onsdag den 29. marts
+                    vil blive ansa således gældende for den forløbne uge: 1. Afregningstallet for smør ! 1000 øre pr.
+                    kg. 2. Hjemmemarkedspris for smør 1200 øre pr. kg. smør. 3. Afregningssummen ( af- regtallet 1000
+                    øre plus afreg- ningstillæg 75 øre ) 1075 øre pr. kg. smør. 4. De danske Mejeriforenin gers
+                    mælkenoteringsudvalg har ansat som engrosnotering for den forløbne uge: Skummetmælk 16 øre pr. kg.
+                    Sødmælk med 4,20 pct. fedt fra mejeri (ekskl. mælketil skud og fedttilskud) a. Svarende til
+                    hejmmemar- kedsprisen for smør. Anvendes ved salt til virksomheder, som ikke er tilsluttet hjemmemar
+                    kedsordningen 74,14 øre pr. kg. reguleringsbeløb for hver 0,05 | pct. fedt — 0,71 øre pr. kg. i
+                    sødmælk, fedtenhedsværdi — 14,12 øre. b. Svarende til afregnings tallet for smør. Anvendes ved I
+                    salg til virksomheder, som er I tilsluttet hjemmemarkedsord
+                </field>
+                <field name="fulltext_org">Vor kære mor, sviger mor, farmor, mormor og oldemor Margrethe Jurgensen (f.
+                    Scliou) er død fra os. Rønne, den 27. marts 1972.
+                </field>
+                <field name="fulltext_org">Familien.</field>
+                <field name="fulltext_org">Begravelsen har fundet sted. H Hjertelig fak for al ven lig deltagelse ved
+                    vor mors begravelse. — En særlig tak til Central sygehuset og Allinge sygehus for god og kær lig
+                    pleje under mors sygdom.
+                </field>
+                <field name="fulltext_org">på en arbejdsplads eller blot en tilfældig gruppe menne sker. Under punktet
+                    kom munikation, fandt man ud af, hvor let man egentlig snakker farbi hinanden, og at det er den
+                    letteste måde at snakke sig fra et spørgs mål, man ikke kan svare på. Endvidere blev der gjort nogle
+                    meget interes sante forsøg med en- og to vejes kommunikation. Et andet interessant emne var
+                    gruppemodsætning og for handlingerne, her så man tydeligt, hvor let en for handling kan blive en kon
+                    kurrence, hvor hver enkelt hypper sine egne kartofler. Søndagen gik med for skellige øvelser om bl.
+                    a. gruppeledelse, sagligheden af en forhandling og en sammenfatning af hele kur set. Resultatet af
+                    kurset var at deltagerne fik et indtryk af, 1 hvor høj grad, samar bejdet spiller ind i menne skets
+                    hvprdag, og vi fik set, hvilke kræfter, der har ind flydelse på en gruppes og enkelt menneskets
+                    arbejde. Leif Beril.
+                </field>
+                <field name="fulltext_org">Vor kære mor, Signe Romer, tidligere Skovgård, Klemensker, er død fra os.
+                </field>
+                <field name="fulltext_org">Rønne, d. 27. marts 1972.</field>
+                <field name="fulltext_org">Familien.</field>
+                <field name="fulltext_org">Begravelsen har fundet sted.</field>
+                <field name="fulltext_norm">Hest« DLK og Kreatureksportforeningerne Øre pr. kg lev. vægt Slagteheste,
+                    eksport Prima 390—410 1. klasse 370-390 1 Slagteheste, hjemmemarkedet I Prima 340-370 1. klasse
+                    310—340 Plage Prima 405—425 I 1. klasse 385-405 j Føl Svære 400 — 440 Små 340-380 For enkelte ekstra
+                    gode dyr betales der lidt mere, for rin gere efter værdi.
+                </field>
+                <field name="fulltext_norm">Dødsfald</field>
+                <field name="fulltext_norm">Min kære hustru, vor ejegode mor, mormor op oldemor Sofie Marie Kruse er
+                    gået hjem til Jesus.
+                </field>
+                <field name="fulltext_norm">Fridal, Rutsker, den 29. marts 1972.</field>
+                <field name="fulltext_norm">Victor Kruse og børnene.</field>
+                <field name="fulltext_norm">Begravelsen har fundet sted.</field>
+                <field name="fulltext_norm">Mejerinoteringen De danske Mejeriforeningers notering onsdag den 29. marts
+                    vil blive ansa således gældende for den forløbne uge: 1. Afregningstallet for smør ! 1000 øre pr.
+                    kg. 2. Hjemmemarkedspris for smør 1200 øre pr. kg. smør. 3. Afregningssummen ( af- regtallet 1000
+                    øre plus afreg- ningstillæg 75 øre ) 1075 øre pr. kg. smør. 4. De danske Mejeriforenin gers
+                    mælkenoteringsudvalg har ansat som engrosnotering for den forløbne uge: Skummetmælk 16 øre pr. kg.
+                    Sødmælk med 4,20 pct. fedt fra mejeri (ekskl. mælketil skud og fedttilskud) a. Svarende til
+                    hejmmemar- kedsprisen for smør. Anvendes ved salt til virksomheder, som ikke er tilsluttet hjemmemar
+                    kedsordningen 74,14 øre pr. kg. reguleringsbeløb for hver 0,05 | pct. fedt — 0,71 øre pr. kg. i
+                    sødmælk, fedtenhedsværdi — 14,12 øre. b. Svarende til afregnings tallet for smør. Anvendes ved I
+                    salg til virksomheder, som er I tilsluttet hjemmemarkedsord
+                </field>
+                <field name="fulltext_norm">Vor kære mor, sviger mor, farmor, mormor og oldemor Margrethe Jurgensen (f.
+                    Scliou) er død fra os. Rønne, den 27. marts 1972.
+                </field>
+                <field name="fulltext_norm">Familien.</field>
+                <field name="fulltext_norm">Begravelsen har fundet sted. H Hjertelig fak for al ven lig deltagelse ved
+                    vor mors begravelse. — En særlig tak til Central sygehuset og Allinge sygehus for god og kær lig
+                    pleje under mors sygdom.
+                </field>
+                <field name="fulltext_norm">på en arbejdsplads eller blot en tilfældig gruppe menne sker. Under punktet
+                    kom munikation, fandt man ud af, hvor let man egentlig snakker farbi hinanden, og at det er den
+                    letteste måde at snakke sig fra et spørgs mål, man ikke kan svare på. Endvidere blev der gjort nogle
+                    meget interes sante forsøg med en- og to vejes kommunikation. Et andet interessant emne var
+                    gruppemodsætning og for handlingerne, her så man tydeligt, hvor let en for handling kan blive en kon
+                    kurrence, hvor hver enkelt hypper sine egne kartofler. Søndagen gik med for skellige øvelser om bl.
+                    a. gruppeledelse, sagligheden af en forhandling og en sammenfatning af hele kur set. Resultatet af
+                    kurset var at deltagerne fik et indtryk af, 1 hvor høj grad, samar bejdet spiller ind i menne skets
+                    hvprdag, og vi fik set, hvilke kræfter, der har ind flydelse på en gruppes og enkelt menneskets
+                    arbejde. Leif Beril.
+                </field>
+                <field name="fulltext_norm">Vor kære mor, Signe Romer, tidligere Skovgård, Klemensker, er død fra os.
+                </field>
+                <field name="fulltext_norm">Rønne, d. 27. marts 1972.</field>
+                <field name="fulltext_norm">Familien.</field>
+                <field name="fulltext_norm">Begravelsen har fundet sted.</field>
+                <field name="alto_box">x=14564,y=6336,w=2096,h=14564</field>
+                <field name="alto_box">x=17244,y=5868,w=952,h=17244</field>
+                <field name="alto_box">x=16912,y=7004,w=1600,h=16912</field>
+                <field name="alto_box">x=16896,y=8068,w=1264,h=16896</field>
+                <field name="alto_box">x=17460,y=8536,w=852,h=17460</field>
+                <field name="alto_box">x=16896,y=8968,w=1600,h=16896</field>
+                <field name="alto_box">x=14512,y=9588,w=2116,h=14512</field>
+                <field name="alto_box">x=16860,y=10388,w=1620,h=16860</field>
+                <field name="alto_box">x=17860,y=12052,w=620,h=17860</field>
+                <field name="alto_box">x=16828,y=12304,w=1632,h=16828</field>
+                <field name="alto_box">x=14496,y=14756,w=1848,h=14496</field>
+                <field name="alto_box">x=16828,y=15188,w=1500,h=16828</field>
+                <field name="alto_box">x=16828,y=16256,w=1600,h=16828</field>
+                <field name="alto_box">x=17828,y=16540,w=600,h=17828</field>
+                <field name="alto_box">x=16812,y=16840,w=1616,h=16812</field>
+                <field name="page_segment">segment_4</field>
+                <field name="newspaper_edition">1</field>
+                <field name="timestamp">1972-04-01T00:00:00Z</field>
+                <field name="sort_year_asc">1972-04-01</field>
+                <field name="sort_year_desc">1972-04-01</field>
+                <field name="_version_">1496172278912647168</field>
+                <field name="score">0.78243303</field>
+            </record>
+        </documentresult>
+    </response>
+    <response name="FacetResult">
+        <facetmodel
+                timing="avisersolr.buildresponses.facets:1|avisersolr.tagadjuster.adjusts.total:0|sbsolr.buildresponses.facets:2|sbsolr.tagadjuster.lma_long.adjust:0|sbsolr.tagadjuster.adjusts.total:0|sbsolr.tagadjuster.adjusts.total:0">
+            <facet name="recordBase">
+                <tag name="doms_aviser" addedobjects="223820" reliability="PRECISE">
+                    <query>recordBase:"doms_aviser"</query>
+                </tag>
+                <tag name="doms_radioTVCollection" addedobjects="1821" reliability="PRECISE">
+                    <query>recordBase:"doms_radioTVCollection"</query>
+                </tag>
+                <tag name="doms_reklamefilm" addedobjects="9" reliability="PRECISE">
+                    <query>recordBase:"doms_reklamefilm"</query>
+                </tag>
+            </facet>
+            <facet name="lma_long">
+                <tag name="avis" addedobjects="223820" reliability="PRECISE">
+                    <query>lma_long:"avis"</query>
+                </tag>
+                <tag name="07" addedobjects="1830" reliability="LESS">
+                    <query>lma_long:"07"</query>
+                </tag>
+                <tag name="07d" addedobjects="1821" reliability="LESS">
+                    <query>lma_long:"07d"</query>
+                </tag>
+            </facet>
+            <facet name="iso_dateTime">
+                <tag name="1947-04-21T00:00:00Z" addedobjects="29" reliability="PRECISE">
+                    <query>iso_dateTime:"1947-04-21T00:00:00Z"</query>
+                </tag>
+                <tag name="1992-08-30T00:00:00Z" addedobjects="27" reliability="PRECISE">
+                    <query>iso_dateTime:"1992-08-30T00:00:00Z"</query>
+                </tag>
+                <tag name="1975-09-14T00:00:00Z" addedobjects="26" reliability="PRECISE">
+                    <query>iso_dateTime:"1975-09-14T00:00:00Z"</query>
+                </tag>
+                <tag name="1989-07-01T00:00:00Z" addedobjects="26" reliability="PRECISE">
+                    <query>iso_dateTime:"1989-07-01T00:00:00Z"</query>
+                </tag>
+                <tag name="1989-08-20T00:00:00Z" addedobjects="26" reliability="PRECISE">
+                    <query>iso_dateTime:"1989-08-20T00:00:00Z"</query>
+                </tag>
+                <tag name="1991-08-25T00:00:00Z" addedobjects="26" reliability="PRECISE">
+                    <query>iso_dateTime:"1991-08-25T00:00:00Z"</query>
+                </tag>
+                <tag name="1993-05-30T00:00:00Z" addedobjects="26" reliability="PRECISE">
+                    <query>iso_dateTime:"1993-05-30T00:00:00Z"</query>
+                </tag>
+                <tag name="1975-03-02T00:00:00Z" addedobjects="25" reliability="PRECISE">
+                    <query>iso_dateTime:"1975-03-02T00:00:00Z"</query>
+                </tag>
+                <tag name="1986-08-31T00:00:00Z" addedobjects="25" reliability="PRECISE">
+                    <query>iso_dateTime:"1986-08-31T00:00:00Z"</query>
+                </tag>
+                <tag name="1988-08-22T00:00:00Z" addedobjects="25" reliability="PRECISE">
+                    <query>iso_dateTime:"1988-08-22T00:00:00Z"</query>
+                </tag>
+                <tag name="1990-06-03T00:00:00Z" addedobjects="25" reliability="PRECISE">
+                    <query>iso_dateTime:"1990-06-03T00:00:00Z"</query>
+                </tag>
+                <tag name="1998-05-17T00:00:00Z" addedobjects="25" reliability="PRECISE">
+                    <query>iso_dateTime:"1998-05-17T00:00:00Z"</query>
+                </tag>
+                <tag name="1998-05-31T00:00:00Z" addedobjects="25" reliability="PRECISE">
+                    <query>iso_dateTime:"1998-05-31T00:00:00Z"</query>
+                </tag>
+                <tag name="1898-07-05T00:00:00Z" addedobjects="24" reliability="PRECISE">
+                    <query>iso_dateTime:"1898-07-05T00:00:00Z"</query>
+                </tag>
+                <tag name="1988-05-22T00:00:00Z" addedobjects="24" reliability="PRECISE">
+                    <query>iso_dateTime:"1988-05-22T00:00:00Z"</query>
+                </tag>
+            </facet>
+            <facet name="lsubject">
+                <tag name="børn &amp; ungdom" addedobjects="743" reliability="PRECISE">
+                    <query>lsubject:"børn &amp; ungdom"</query>
+                </tag>
+                <tag name="for større børn" addedobjects="504" reliability="PRECISE">
+                    <query>lsubject:"for større børn"</query>
+                </tag>
+                <tag name="eventyr og dyr" addedobjects="472" reliability="PRECISE">
+                    <query>lsubject:"eventyr og dyr"</query>
+                </tag>
+                <tag name="alle" addedobjects="388" reliability="PRECISE">
+                    <query>lsubject:"alle"</query>
+                </tag>
+                <tag name="dokumentar" addedobjects="337" reliability="PRECISE">
+                    <query>lsubject:"dokumentar"</query>
+                </tag>
+                <tag name="dokumentarserie" addedobjects="225" reliability="PRECISE">
+                    <query>lsubject:"dokumentarserie"</query>
+                </tag>
+                <tag name="underholdning" addedobjects="185" reliability="PRECISE">
+                    <query>lsubject:"underholdning"</query>
+                </tag>
+                <tag name="film" addedobjects="174" reliability="PRECISE">
+                    <query>lsubject:"film"</query>
+                </tag>
+                <tag name="serier" addedobjects="147" reliability="PRECISE">
+                    <query>lsubject:"serier"</query>
+                </tag>
+                <tag name="andet" addedobjects="90" reliability="PRECISE">
+                    <query>lsubject:"andet"</query>
+                </tag>
+                <tag name="for de mindste" addedobjects="85" reliability="PRECISE">
+                    <query>lsubject:"for de mindste"</query>
+                </tag>
+                <tag name="fiktion" addedobjects="68" reliability="PRECISE">
+                    <query>lsubject:"fiktion"</query>
+                </tag>
+                <tag name="eventyr" addedobjects="61" reliability="PRECISE">
+                    <query>lsubject:"eventyr"</query>
+                </tag>
+                <tag name="friluftsaktiviteter ikke sport" addedobjects="61" reliability="PRECISE">
+                    <query>lsubject:"friluftsaktiviteter ikke sport"</query>
+                </tag>
+                <tag name="dramaserie" addedobjects="44" reliability="PRECISE">
+                    <query>lsubject:"dramaserie"</query>
+                </tag>
+            </facet>
+            <facet name="lvx">
+                <tag name="aarhuus stifts tidende 1871 1989" addedobjects="47868" reliability="PRECISE">
+                    <query>lvx:"aarhuus stifts tidende 1871 1989"</query>
+                </tag>
+                <tag name="bornholms tidende 1866" addedobjects="46602" reliability="PRECISE">
+                    <query>lvx:"bornholms tidende 1866"</query>
+                </tag>
+                <tag name="morgenavisen jyllands posten 1969" addedobjects="32839" reliability="PRECISE">
+                    <query>lvx:"morgenavisen jyllands posten 1969"</query>
+                </tag>
+                <tag name="jyllandsposten 1871 1937" addedobjects="23937" reliability="PRECISE">
+                    <query>lvx:"jyllandsposten 1871 1937"</query>
+                </tag>
+                <tag name="jyllands posten 1937 1969" addedobjects="20162" reliability="PRECISE">
+                    <query>lvx:"jyllands posten 1937 1969"</query>
+                </tag>
+                <tag name="kiøbenhavns kongelig alene priviligerede adresse contoirs efterretninger 1759 1854"
+                     addedobjects="14982" reliability="PRECISE">
+                    <query>lvx:"kiøbenhavns kongelig alene priviligerede adresse contoirs efterretninger 1759 1854"
+                    </query>
+                </tag>
+                <tag name="århus stiftstidende 1989" addedobjects="8731" reliability="PRECISE">
+                    <query>lvx:"århus stiftstidende 1989"</query>
+                </tag>
+                <tag name="adresseavisen kjøbenhavns adressecomptoirs efterretninger 1891 1905" addedobjects="5844"
+                     reliability="PRECISE">
+                    <query>lvx:"adresseavisen kjøbenhavns adressecomptoirs efterretninger 1891 1905"</query>
+                </tag>
+                <tag name="dimmalætting amtstidende for færøerne 1877 2013" addedobjects="4426" reliability="PRECISE">
+                    <query>lvx:"dimmalætting amtstidende for færøerne 1877 2013"</query>
+                </tag>
+                <tag name="horsens folkeblad 1866" addedobjects="3930" reliability="PRECISE">
+                    <query>lvx:"horsens folkeblad 1866"</query>
+                </tag>
+                <tag name="de til forsendelse med posten allene privilegerede kiøbenhavnske tidender 1762 1808"
+                     addedobjects="2202" reliability="PRECISE">
+                    <query>lvx:"de til forsendelse med posten allene privilegerede kiøbenhavnske tidender 1762 1808"
+                    </query>
+                </tag>
+                <tag name="aalborg stiftstidende 1904 1971" addedobjects="2048" reliability="PRECISE">
+                    <query>lvx:"aalborg stiftstidende 1904 1971"</query>
+                </tag>
+                <tag name="kjøbenhavns adressecomptoirs efterretninger 1855 1891" addedobjects="1875"
+                     reliability="PRECISE">
+                    <query>lvx:"kjøbenhavns adressecomptoirs efterretninger 1855 1891"</query>
+                </tag>
+                <tag name="sosialurin 1955" addedobjects="1143" reliability="PRECISE">
+                    <query>lvx:"sosialurin 1955"</query>
+                </tag>
+                <tag name="kongelig privilegeret aarhuus stifts tidende 1845 1871" addedobjects="1140"
+                     reliability="PRECISE">
+                    <query>lvx:"kongelig privilegeret aarhuus stifts tidende 1845 1871"</query>
+                </tag>
+            </facet>
+            <facet name="lplace">
+                <tag name="Aarhus" addedobjects="134677" reliability="PRECISE">
+                    <query>lplace:"Aarhus"</query>
+                </tag>
+                <tag name="Rønne" addedobjects="46602" reliability="PRECISE">
+                    <query>lplace:"Rønne"</query>
+                </tag>
+                <tag name="København" addedobjects="27403" reliability="PRECISE">
+                    <query>lplace:"København"</query>
+                </tag>
+                <tag name="Torshavn" addedobjects="7663" reliability="PRECISE">
+                    <query>lplace:"Torshavn"</query>
+                </tag>
+                <tag name="Horsens" addedobjects="3930" reliability="PRECISE">
+                    <query>lplace:"Horsens"</query>
+                </tag>
+                <tag name="Aalborg" addedobjects="2048" reliability="PRECISE">
+                    <query>lplace:"Aalborg"</query>
+                </tag>
+                <tag name="Thorshavn" addedobjects="862" reliability="PRECISE">
+                    <query>lplace:"Thorshavn"</query>
+                </tag>
+                <tag name="Tværå" addedobjects="300" reliability="PRECISE">
+                    <query>lplace:"Tværå"</query>
+                </tag>
+                <tag name="Klaksvig" addedobjects="229" reliability="PRECISE">
+                    <query>lplace:"Klaksvig"</query>
+                </tag>
+                <tag name="Saltangerå" addedobjects="64" reliability="PRECISE">
+                    <query>lplace:"Saltangerå"</query>
+                </tag>
+                <tag name="Fuglefjord" addedobjects="34" reliability="PRECISE">
+                    <query>lplace:"Fuglefjord"</query>
+                </tag>
+                <tag name="Runevig" addedobjects="4" reliability="PRECISE">
+                    <query>lplace:"Runevig"</query>
+                </tag>
+            </facet>
+            <facet name="author_normalised">
+                <tag name="georgaris dean" addedobjects="34" reliability="PRECISE">
+                    <query>author_normalised:"georgaris dean"</query>
+                </tag>
+                <tag name="souza steven e de" addedobjects="34" reliability="PRECISE">
+                    <query>author_normalised:"souza steven e de"</query>
+                </tag>
+                <tag name="hart james v" addedobjects="26" reliability="PRECISE">
+                    <query>author_normalised:"hart james v"</query>
+                </tag>
+                <tag name="dartland chuck lorre og dottie" addedobjects="24" reliability="PRECISE">
+                    <query>author_normalised:"dartland chuck lorre og dottie"</query>
+                </tag>
+                <tag name="balling erik" addedobjects="8" reliability="PRECISE">
+                    <query>author_normalised:"balling erik"</query>
+                </tag>
+                <tag name="friis mikkelsen jarl" addedobjects="8" reliability="PRECISE">
+                    <query>author_normalised:"friis mikkelsen jarl"</query>
+                </tag>
+                <tag name="guldbrandsen peer" addedobjects="8" reliability="PRECISE">
+                    <query>author_normalised:"guldbrandsen peer"</query>
+                </tag>
+                <tag name="stephensen ole" addedobjects="8" reliability="PRECISE">
+                    <query>author_normalised:"stephensen ole"</query>
+                </tag>
+                <tag name="v james" addedobjects="8" reliability="PRECISE">
+                    <query>author_normalised:"v james"</query>
+                </tag>
+                <tag name="byrne johnny" addedobjects="7" reliability="PRECISE">
+                    <query>author_normalised:"byrne johnny"</query>
+                </tag>
+                <tag name="gittins rob" addedobjects="7" reliability="PRECISE">
+                    <query>author_normalised:"gittins rob"</query>
+                </tag>
+                <tag name="lane david" addedobjects="7" reliability="PRECISE">
+                    <query>author_normalised:"lane david"</query>
+                </tag>
+                <tag name="m fl alan whiting" addedobjects="7" reliability="PRECISE">
+                    <query>author_normalised:"m fl alan whiting"</query>
+                </tag>
+                <tag name="woodward barry" addedobjects="7" reliability="PRECISE">
+                    <query>author_normalised:"woodward barry"</query>
+                </tag>
+                <tag name="fusco john" addedobjects="6" reliability="PRECISE">
+                    <query>author_normalised:"fusco john"</query>
+                </tag>
+            </facet>
+            <facet name="year">
+                <tag name="2002" addedobjects="467" reliability="PRECISE">
+                    <query>year:"2002"</query>
+                </tag>
+                <tag name="2010" addedobjects="449" reliability="PRECISE">
+                    <query>year:"2010"</query>
+                </tag>
+                <tag name="2012" addedobjects="396" reliability="PRECISE">
+                    <query>year:"2012"</query>
+                </tag>
+                <tag name="2011" addedobjects="322" reliability="PRECISE">
+                    <query>year:"2011"</query>
+                </tag>
+                <tag name="2014" addedobjects="259" reliability="PRECISE">
+                    <query>year:"2014"</query>
+                </tag>
+                <tag name="2013" addedobjects="235" reliability="PRECISE">
+                    <query>year:"2013"</query>
+                </tag>
+                <tag name="2006" addedobjects="162" reliability="PRECISE">
+                    <query>year:"2006"</query>
+                </tag>
+                <tag name="2007" addedobjects="144" reliability="PRECISE">
+                    <query>year:"2007"</query>
+                </tag>
+                <tag name="2009" addedobjects="136" reliability="PRECISE">
+                    <query>year:"2009"</query>
+                </tag>
+                <tag name="2003" addedobjects="111" reliability="PRECISE">
+                    <query>year:"2003"</query>
+                </tag>
+                <tag name="2008" addedobjects="90" reliability="PRECISE">
+                    <query>year:"2008"</query>
+                </tag>
+                <tag name="2015" addedobjects="56" reliability="PRECISE">
+                    <query>year:"2015"</query>
+                </tag>
+                <tag name="2005" addedobjects="47" reliability="PRECISE">
+                    <query>year:"2005"</query>
+                </tag>
+                <tag name="1998" addedobjects="31" reliability="PRECISE">
+                    <query>year:"1998"</query>
+                </tag>
+                <tag name="0000" addedobjects="30" reliability="PRECISE">
+                    <query>year:"0000"</query>
+                </tag>
+            </facet>
+            <facet name="iso_date">
+                <tag name="2014-11-28" addedobjects="8" reliability="PRECISE">
+                    <query>iso_date:"2014-11-28"</query>
+                </tag>
+                <tag name="2014-03-20" addedobjects="7" reliability="PRECISE">
+                    <query>iso_date:"2014-03-20"</query>
+                </tag>
+                <tag name="2010-10-26" addedobjects="6" reliability="PRECISE">
+                    <query>iso_date:"2010-10-26"</query>
+                </tag>
+                <tag name="2010-11-18" addedobjects="6" reliability="PRECISE">
+                    <query>iso_date:"2010-11-18"</query>
+                </tag>
+                <tag name="2010-12-20" addedobjects="6" reliability="PRECISE">
+                    <query>iso_date:"2010-12-20"</query>
+                </tag>
+                <tag name="2010-12-27" addedobjects="6" reliability="PRECISE">
+                    <query>iso_date:"2010-12-27"</query>
+                </tag>
+                <tag name="2012-09-23" addedobjects="6" reliability="PRECISE">
+                    <query>iso_date:"2012-09-23"</query>
+                </tag>
+                <tag name="2013-11-17" addedobjects="6" reliability="PRECISE">
+                    <query>iso_date:"2013-11-17"</query>
+                </tag>
+                <tag name="2010-11-02" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-11-02"</query>
+                </tag>
+                <tag name="2010-11-15" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-11-15"</query>
+                </tag>
+                <tag name="2010-11-16" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-11-16"</query>
+                </tag>
+                <tag name="2010-11-17" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-11-17"</query>
+                </tag>
+                <tag name="2010-11-19" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-11-19"</query>
+                </tag>
+                <tag name="2010-11-29" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-11-29"</query>
+                </tag>
+                <tag name="2010-12-02" addedobjects="5" reliability="PRECISE">
+                    <query>iso_date:"2010-12-02"</query>
+                </tag>
+            </facet>
+            <facet name="lti">
+                <tag name="cowboy indianer og hest" addedobjects="473" reliability="PRECISE">
+                    <query>lti:"cowboy indianer og hest"</query>
+                </tag>
+                <tag name="kærlighedens laboratorium" addedobjects="54" reliability="PRECISE">
+                    <query>lti:"kærlighedens laboratorium"</query>
+                </tag>
+                <tag name="kvæg ræs" addedobjects="48" reliability="PRECISE">
+                    <query>lti:"kvæg ræs"</query>
+                </tag>
+                <tag name="tomb raider 2 the cradle of life" addedobjects="39" reliability="PRECISE">
+                    <query>lti:"tomb raider 2 the cradle of life"</query>
+                </tag>
+                <tag name="helt til hest" addedobjects="37" reliability="PRECISE">
+                    <query>lti:"helt til hest"</query>
+                </tag>
+                <tag name="der var engang" addedobjects="33" reliability="PRECISE">
+                    <query>lti:"der var engang"</query>
+                </tag>
+                <tag name="et umage par" addedobjects="31" reliability="PRECISE">
+                    <query>lti:"et umage par"</query>
+                </tag>
+                <tag name="skrål med freja" addedobjects="24" reliability="PRECISE">
+                    <query>lti:"skrål med freja"</query>
+                </tag>
+                <tag name="anne vibeke rejser" addedobjects="23" reliability="PRECISE">
+                    <query>lti:"anne vibeke rejser"</query>
+                </tag>
+                <tag name="alarm 112" addedobjects="22" reliability="PRECISE">
+                    <query>lti:"alarm 112"</query>
+                </tag>
+                <tag name="store nørd" addedobjects="22" reliability="PRECISE">
+                    <query>lti:"store nørd"</query>
+                </tag>
+                <tag name="vild med dyr" addedobjects="22" reliability="PRECISE">
+                    <query>lti:"vild med dyr"</query>
+                </tag>
+                <tag name="carsten og gittes vennevilla" addedobjects="21" reliability="PRECISE">
+                    <query>lti:"carsten og gittes vennevilla"</query>
+                </tag>
+                <tag name="funny haha det er en ny sæson" addedobjects="20" reliability="PRECISE">
+                    <query>lti:"funny haha det er en ny sæson"</query>
+                </tag>
+                <tag name="rideskolen" addedobjects="20" reliability="PRECISE">
+                    <query>lti:"rideskolen"</query>
+                </tag>
+            </facet>
+            <facet name="channel_name_facet">
+                <tag name="dr ramasjang" addedobjects="620" reliability="PRECISE">
+                    <query>channel_name_facet:"dr ramasjang"</query>
+                </tag>
+                <tag name="dr1" addedobjects="261" reliability="PRECISE">
+                    <query>channel_name_facet:"dr1"</query>
+                </tag>
+                <tag name="tv 2 zulu" addedobjects="213" reliability="PRECISE">
+                    <query>channel_name_facet:"tv 2 zulu"</query>
+                </tag>
+                <tag name="tv 2" addedobjects="154" reliability="PRECISE">
+                    <query>channel_name_facet:"tv 2"</query>
+                </tag>
+                <tag name="dr2" addedobjects="129" reliability="PRECISE">
+                    <query>channel_name_facet:"dr2"</query>
+                </tag>
+                <tag name="dk4" addedobjects="68" reliability="PRECISE">
+                    <query>channel_name_facet:"dk4"</query>
+                </tag>
+                <tag name="dr ultra" addedobjects="57" reliability="PRECISE">
+                    <query>channel_name_facet:"dr ultra"</query>
+                </tag>
+                <tag name="tv 2 charlie" addedobjects="46" reliability="PRECISE">
+                    <query>channel_name_facet:"tv 2 charlie"</query>
+                </tag>
+                <tag name="dr k" addedobjects="38" reliability="PRECISE">
+                    <query>channel_name_facet:"dr k"</query>
+                </tag>
+                <tag name="kanal 4" addedobjects="31" reliability="PRECISE">
+                    <query>channel_name_facet:"kanal 4"</query>
+                </tag>
+                <tag name="dr p1" addedobjects="29" reliability="PRECISE">
+                    <query>channel_name_facet:"dr p1"</query>
+                </tag>
+                <tag name="dr3" addedobjects="29" reliability="PRECISE">
+                    <query>channel_name_facet:"dr3"</query>
+                </tag>
+                <tag name="tv3" addedobjects="29" reliability="PRECISE">
+                    <query>channel_name_facet:"tv3"</query>
+                </tag>
+                <tag name="tv 2 fri" addedobjects="27" reliability="PRECISE">
+                    <query>channel_name_facet:"tv 2 fri"</query>
+                </tag>
+                <tag name="tv 2| østjylland" addedobjects="27" reliability="PRECISE">
+                    <query>channel_name_facet:"tv 2| østjylland"</query>
+                </tag>
+            </facet>
+            <facet name="lhovedgenre">
+                <tag name="børn &amp; ungdom" addedobjects="743" reliability="PRECISE">
+                    <query>lhovedgenre:"børn &amp; ungdom"</query>
+                </tag>
+                <tag name="dokumentar" addedobjects="337" reliability="PRECISE">
+                    <query>lhovedgenre:"dokumentar"</query>
+                </tag>
+                <tag name="underholdning" addedobjects="184" reliability="PRECISE">
+                    <query>lhovedgenre:"underholdning"</query>
+                </tag>
+                <tag name="film" addedobjects="171" reliability="PRECISE">
+                    <query>lhovedgenre:"film"</query>
+                </tag>
+                <tag name="serier" addedobjects="147" reliability="PRECISE">
+                    <query>lhovedgenre:"serier"</query>
+                </tag>
+                <tag name="alle" addedobjects="80" reliability="PRECISE">
+                    <query>lhovedgenre:"alle"</query>
+                </tag>
+                <tag name="radio" addedobjects="36" reliability="PRECISE">
+                    <query>lhovedgenre:"radio"</query>
+                </tag>
+                <tag name="fritid &amp; livsstil" addedobjects="28" reliability="PRECISE">
+                    <query>lhovedgenre:"fritid &amp; livsstil"</query>
+                </tag>
+                <tag name="sport" addedobjects="26" reliability="PRECISE">
+                    <query>lhovedgenre:"sport"</query>
+                </tag>
+                <tag name="videnskab &amp; teknologi" addedobjects="18" reliability="PRECISE">
+                    <query>lhovedgenre:"videnskab &amp; teknologi"</query>
+                </tag>
+                <tag name="kultur" addedobjects="11" reliability="PRECISE">
+                    <query>lhovedgenre:"kultur"</query>
+                </tag>
+                <tag name="natur &amp; miljø" addedobjects="10" reliability="PRECISE">
+                    <query>lhovedgenre:"natur &amp; miljø"</query>
+                </tag>
+                <tag name="nyheder &amp; aktualitet" addedobjects="10" reliability="PRECISE">
+                    <query>lhovedgenre:"nyheder &amp; aktualitet"</query>
+                </tag>
+                <tag name="musik" addedobjects="9" reliability="PRECISE">
+                    <query>lhovedgenre:"musik"</query>
+                </tag>
+                <tag name="sundhed &amp; mad" addedobjects="5" reliability="PRECISE">
+                    <query>lhovedgenre:"sundhed &amp; mad"</query>
+                </tag>
+            </facet>
+            <facet name="commercial_type_facet">
+                <tag name="tv reklame" addedobjects="8" reliability="PRECISE">
+                    <query>commercial_type_facet:"tv reklame"</query>
+                </tag>
+                <tag name="biografreklame" addedobjects="1" reliability="PRECISE">
+                    <query>commercial_type_facet:"biografreklame"</query>
+                </tag>
+            </facet>
+        </facetmodel>
+    </response>
+</responsecollection>
