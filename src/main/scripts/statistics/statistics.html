@@ -35,16 +35,17 @@
 
       var myBaseUrl = "statistics.py";
 
-      function updateLink() {
+      function updateLink(getStatistics) {
         var url = myBaseUrl +  "?fromDate=" + $("#fromDate").val() + "&toDate=" + $("#toDate").val();
-        $("#getStatistics").attr("href", url);
+        getStatistics.attr("href", url);
       }
 
       $(document).ready(function(){
         $("#fromDate").datepicker({format: "yyyy-mm-dd"});
         $("#toDate").datepicker({format: "yyyy-mm-dd"});
-        $("#getStatistics").attr("href", myBaseUrl);
-        $("#getStatistics").click(function(event) {updateLink();});
+        var getStatistics = $("#getStatistics");
+        getStatistics.attr("href", myBaseUrl);
+        getStatistics.click(function(event) {updateLink(getStatistics);});
       }); 
     </script>
   </body>
