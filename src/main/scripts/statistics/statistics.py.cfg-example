@@ -1,8 +1,3 @@
 [cgi]
-doms_url = http://naiad:7880/fedora/
-
-username = ...
-password = ...
-
-log_file_pattern = ../../NO-154-logs/StreamingStat-%%s.log
-
+doms_url = http://miranda:56808/mediehub/search/services/SearchWS
+log_file_pattern = ../sample-logs/PageStreamingStat-%%s.log

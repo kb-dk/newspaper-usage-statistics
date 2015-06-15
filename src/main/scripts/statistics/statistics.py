@@ -64,18 +64,8 @@ end_date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(end_str + "
 # generate dates. note:  range(0,1) -> [0] hence the +1
 dates = [start_date + datetime.timedelta(days = x) for x in range(0,(end_date - start_date).days + 1)]
 
-# prepare urllib2
-username = config.get("cgi", "username")
-password = config.get("cgi", "password")
-
-# https://docs.python.org/2/howto/urllib2.html#id6
-password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-top_level_url = doms_url
-password_mgr.add_password(None, top_level_url, username, password)
-
-handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+handler = urllib2.HTTPHandler()
 opener = urllib2.build_opener(handler)
-
 
 namespaces = {
     "rdf":"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
