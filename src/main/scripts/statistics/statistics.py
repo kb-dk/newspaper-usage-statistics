@@ -105,13 +105,13 @@ for date in dates:
     log_file = open(log_file_name, "rb")
 
     for line in log_file:
-        if not 'AUTHLOG' in line: continue
+        if not '*USAGELOG*' in line: continue
         outputLine = {}
         #They are all from this collection
         outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
 
         #Parse the log entry
-        (crap1, json) = line.split("AUTHLOG:")
+        (crap1, json) = line.split("*USAGELOG*:")
         logEntry = simplejson.loads(json)
 
         #If not correct type, ignore
@@ -129,7 +129,8 @@ for date in dates:
         else:
             uniqueIDs[uniqueID] = uniqueID # only key matters.
 
-        outputLine["Timestamp"] = logEntry["dateTime"]
+        log_entry_date_time = logEntry["dateTime"]
+        outputLine["Timestamp"] =  datetime.datetime.fromtimestamp(log_entry_date_time).strftime("%Y-%m-%dT%H:%M:%S")
 
         outputLine["Klient"] = logEntry["remote_ip"]
 
