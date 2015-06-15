@@ -22,7 +22,7 @@ config_file_name = "../../statistics.py.cfg"
 
 # -----
 
-#cgitb.enable() # web page feedback in case of problems
+#cgitb.enable() # TODO ENABLE THIS WHEN CLI TESTS DONE. web page feedback in case of problems
 parameters = cgi.FieldStorage()
 
 encoding = "utf-8" # What to convert non-ASCII chars to.
@@ -35,7 +35,18 @@ doms_url = config.get("cgi", "doms_url") # .../fedora/
 # Example: d68a0380-012a-4cd8-8e5b-37adf6c2d47f (optionally trailed by a ".fileending")
 re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\.[a-zA-Z0-9]*)?$")
 
+# The type of resource to get
+
+for i in parameters.keys():
+    print parameters[i].value
+
+if "type" in parameters:
+    requiredType = parameters["type"]
+else:
+    requiredType = ""
+
 log_file_pattern = config.get("cgi", "log_file_pattern")
+
 if "fromDate" in parameters:
     start_str = parameters["fromDate"].value # "2013-06-15"
 else:
@@ -106,25 +117,29 @@ for date in dates:
     for line in log_file:
         if not 'AUTHLOG' in line: continue
         outputLine = {}
-
+        #They are all from this collection
         outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
 
+        #Parse the log entry
         (crap1, json) = line.split("AUTHLOG:")
         logEntry = simplejson.loads(json)
 
-        ts = logEntry["dateTime"]
-        outputLine["Timestamp"] = ts
+        #If not correct type, ignore
+        if requiredType != "" and not requiredType == logEntry["resource_type"]:
+            continue
+        outputLine["Adgangstype"] = logEntry["resource_type"]
 
         doms_id = logEntry["resource_id"]
         outputLine["UUID"] = doms_id
 
+        #If this ticket/domsId have been seen before ignore.
         uniqueID = doms_id + logEntry["ticket_id"]
         if uniqueID in uniqueIDs:
             continue
         else:
-            uniqueIDs[uniqueID] = ts # only key matters.
+            uniqueIDs[uniqueID] = uniqueID # only key matters.
 
-        outputLine["Adgangstype"] = logEntry["resource_type"]
+        outputLine["Timestamp"] = logEntry["dateTime"]
 
         outputLine["Klient"] = logEntry["remote_ip"]
 
