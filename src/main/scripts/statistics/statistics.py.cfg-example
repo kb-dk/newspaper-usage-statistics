@@ -1,3 +1,3 @@
 [cgi]
-mediestream_url = http://miranda:56808/mediehub/search/services/SearchWS
-log_file_pattern = ../sample-logs/PageStreamingStat-%%s.log
+mediestream_url = http://mars:56808/mediehub/search/services/SearchWS
+statistics_file_name_pattern = ../../../../sample-logs/thumbnails.*

@@ -2,6 +2,8 @@
 
 # Jira issue NO-154.  Enrich mediastream player log with DOMS meta data.
 
+from __future__ import print_function
+
 from lxml import etree as ET
 import ConfigParser
 import csv
@@ -15,6 +17,8 @@ import cgi
 import cgitb
 import urllib2
 from io import StringIO, BytesIO
+import glob
+import string
 
 # 
 
@@ -27,8 +31,18 @@ parameters = cgi.FieldStorage()
 
 encoding = "utf-8" # What to convert non-ASCII chars to.
 
+absolute_config_file_name = os.path.abspath(config_file_name)
+if not os.path.exists(absolute_config_file_name):
+    # http://stackoverflow.com/a/14981125/53897
+    print("Configuration file not found: ", absolute_config_file_name, file=sys.stderr)
+    exit(1)
+
+
 config = ConfigParser.SafeConfigParser()
 config.read(config_file_name)
+
+
+
 
 doms_url = config.get("cgi", "mediestream_url") # .../fedora/
 
@@ -38,14 +52,14 @@ re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 # The type of resource to get
 
 for i in parameters.keys():
-    print parameters[i].value
+    print(parameters[i].value)
 
 if "type" in parameters:
     requiredType = parameters["type"]
 else:
     requiredType = ""
 
-log_file_pattern = config.get("cgi", "log_file_pattern")
+statistics_file_pattern = config.get("cgi", "statistics_file_name_pattern")
 
 if "fromDate" in parameters:
     start_str = parameters["fromDate"].value # "2013-06-15"
@@ -55,7 +69,7 @@ else:
 if "toDate" in parameters:
     end_str = parameters["toDate"].value
 else:
-    end_str = "2013-07-01"
+    end_str = "2015-07-01"
 
 # http://stackoverflow.com/a/2997846/53897 - 10:00 is to avoid timezone issues in general.
 start_date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(start_str + " 10:00", '%Y-%m-%d %H:%M')))
@@ -78,9 +92,9 @@ fieldnames = ["Timestamp", "Type", "AvisID", "Adgangstype", "Udgivelsestidspunkt
               "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
               "SBIPRoleMapper", "MediestreamFullAccess", "UUID"]
 
-print "Content-type: text/csv"
-print "Content-disposition: attachment; filename=stat-" + start_str + "-" + end_str + ".csv"
-print
+print("Content-type: text/csv")
+print("Content-disposition: attachment; filename=stat-" + start_str + "-" + end_str + ".csv")
+print("")
 
 
 result_file = sys.stdout
@@ -94,45 +108,58 @@ result_dict_writer.writerow(header)
 doms_ids_seen = {} # DOMS lookup cache, id is key
 uniqueIDs = {} # ticket/domsID combos we have already handled.
 
-for date in dates:
+for statistics_file_name in glob.iglob(statistics_file_pattern):
 
-    log_file_name = log_file_pattern % date.strftime("%Y-%m-%d")
-
-    # Silently skip non-existing logfiles.
-    if os.path.isfile(log_file_name) == False:
+    # FIXME: Silently skip older logfiles.
+    if os.path.isfile(statistics_file_name) == False:
         continue
 
-    log_file = open(log_file_name, "rb")
+    statistics_file = open(statistics_file_name, "rb")
+    splitString = ": "
 
-    for line in log_file:
-        if not '*USAGELOG*' in line: continue
+    for line in statistics_file:
+
+        # Thu Jun 18 15:46:09 2015: {"resource_id":"cca6e5a6-a635-49f0-8f26-0e05ac9dd8c2",...
+        splitPosition = string.find(line, splitString)
+
+        if (splitPosition == -1): # ignore bad log lines
+            continue
+
+        json = line[splitPosition + len(splitString):]
+
+        try:
+            entry = simplejson.loads(json)
+        except simplejson.scanner.JSONDecodeError as e:
+            print("Bad JSON skipped: ", json, file=sys.stderr)
+            continue # next line
+
+        # -- ready to generate output
+
         outputLine = {}
+
         #They are all from this collection
         outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
 
-        #Parse the log entry
-        (crap1, json) = line.split("*USAGELOG*:")
-        logEntry = simplejson.loads(json)
-
         #If not correct type, ignore
-        if requiredType != "" and not requiredType == logEntry["resource_type"]:
+        if requiredType != "" and not requiredType == entry["resource_type"]:
             continue
-        outputLine["Adgangstype"] = logEntry["resource_type"]
 
-        doms_id = logEntry["resource_id"]
+        outputLine["Adgangstype"] = entry["resource_type"]
+
+        doms_id = entry["resource_id"]
         outputLine["UUID"] = doms_id
 
         #If this ticket/domsId have been seen before ignore.
-        uniqueID = doms_id + logEntry["ticket_id"]
+        uniqueID = doms_id + entry["ticket_id"]
         if uniqueID in uniqueIDs:
             continue
         else:
             uniqueIDs[uniqueID] = uniqueID # only key matters.
 
-        log_entry_date_time = logEntry["dateTime"]
+        log_entry_date_time = entry["dateTime"]
         outputLine["Timestamp"] =  datetime.datetime.fromtimestamp(log_entry_date_time).strftime("%Y-%m-%dT%H:%M:%S")
 
-        outputLine["Klient"] = logEntry["remote_ip"]
+        outputLine["Klient"] = entry["remote_ip"]
 
         if doms_id in doms_ids_seen:
             shortFormat = doms_ids_seen[doms_id]
@@ -150,16 +177,16 @@ for date in dates:
             shortFormat = (core.xpath("/responsecollection/response/documentresult/record[1]/field[@name='shortformat']/shortrecord"))[0]
             doms_ids_seen[doms_id] = shortFormat
 
-        #TODO fix for pdf downloads also, where not all these fields might exist
-        #print ET.tostring(shortFormat)
+        # TODO fix for pdf downloads also, where not all these fields might exist
+        # print(ET.tostring(shortFormat))
         outputLine["AvisID"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces)[0]
         outputLine["Udgivelsestidspunkt"] = shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces)[0]
         outputLine["Udgivelsesnummer"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces)[0]
-        outputLine["Sektion"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces)[0]
+        outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
         outputLine["Sidenummer"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces)[0]
 
         # credentials
-        creds = logEntry["userAttributes"]
+        creds = entry["userAttributes"]
 
         for cred in ["schacHomeOrganization", "eduPersonPrimaryAffiliation",
                      "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
@@ -170,6 +197,10 @@ for date in dates:
             else:
                 outputLine[cred] = ""
 
-        result_dict_writer.writerow(outputLine)
+        encodedOutputLine = {}
+        for key in outputLine.keys():
+            encodedOutputLine[key] = outputLine[key].encode(encoding)
 
-    log_file.close()
+        result_dict_writer.writerow(encodedOutputLine)
+
+    statistics_file.close()
