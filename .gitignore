@@ -1,5 +1,6 @@
 statistics.py.cfg
-.idea
+.idea/
 *.iml
 *.ipr
 *.iws
+*~
