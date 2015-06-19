@@ -16,6 +16,7 @@ import time
 import cgi
 import cgitb
 import urllib2
+import urllib
 from io import StringIO, BytesIO
 import glob
 import string
@@ -164,7 +165,30 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
         if doms_id in doms_ids_seen:
             shortFormat = doms_ids_seen[doms_id]
         else:
-            url_core = doms_url + "?method=simpleSearch&query=pageUUID:\"doms_aviser_page:uuid:"+doms_id+"\"&numberOfRecords=1&startIndex=0"
+            # {search.document.query:"pageUUID:
+# \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
+# pageUUID:\"doms_aviser_page:uuid:f2816832-7bd4-4353-a763-ad9eff91cf09
+# \"",
+# search.document.maxrecords:"20", search.document.startindex:"0",
+# search.document.resultfields:"pageUUID, shortformat",
+# solrparam.facet:"false",
+# group:"true",
+# group.field:"pageUUID",
+# search.document.collectdocids:"false"}
+
+            query = {}
+            query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +doms_id + "\""
+            query["search.document.maxrecords"] = "20"
+            query["search.document.startindex"] = "0"
+            query["search.document.resultfields"] = "pageUUID, shortformat"
+            query["solrparam.facet"] = "false"
+            query["group"] = "true"
+            query["group.field"] = "pageUUID"
+            query["search.document.collectdocids"] = "false"
+
+            queryJSON = simplejson.dumps(query)
+
+            url_core = doms_url + "?method=directJSON&" + urllib.urlencode({"json" : queryJSON})
 
             core_body = opener.open(url_core)
             core_body_text = core_body.read()
@@ -172,9 +196,11 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             core = ET.fromstring(core_body_text)
             soapNS = {"soapenv":"http://schemas.xmlsoap.org/soap/envelope/",
                           "ns1":"http://statsbiblioteket.dk/summa/search"}
-            core_body_text = core.xpath("/soapenv:Envelope/soapenv:Body/simpleSearchResponse/ns1:simpleSearchReturn/text()",namespaces=soapNS)[0]
+            core_body_text = core.xpath("/soapenv:Envelope/soapenv:Body/directJSONResponse/ns1:directJSONReturn/text()",namespaces=soapNS)[0]
+            # print(core_body_text)
+
             core = ET.parse(BytesIO(bytes(bytearray(core_body_text, encoding='utf-8'))))
-            shortFormat = (core.xpath("/responsecollection/response/documentresult/record[1]/field[@name='shortformat']/shortrecord"))[0]
+            shortFormat = (core.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
             doms_ids_seen[doms_id] = shortFormat
 
         # TODO fix for pdf downloads also, where not all these fields might exist
