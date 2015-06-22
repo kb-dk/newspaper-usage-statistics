@@ -20,6 +20,7 @@ import urllib
 from io import StringIO, BytesIO
 import glob
 import string
+import suds
 
 # 
 
@@ -42,10 +43,15 @@ if not os.path.exists(absolute_config_file_name):
 config = ConfigParser.SafeConfigParser()
 config.read(config_file_name)
 
+# --
 
+mediestream_wsdl = config.get("cgi", "mediestream_wsdl") # .../fedora/
 
+# https://fedorahosted.org/suds/wiki/Documentation
+client = suds.client.Client(mediestream_wsdl)
+print(client)
 
-doms_url = config.get("cgi", "mediestream_url") # .../fedora/
+# --
 
 # Example: d68a0380-012a-4cd8-8e5b-37adf6c2d47f (optionally trailed by a ".fileending")
 re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\.[a-zA-Z0-9]*)?$")
@@ -88,7 +94,7 @@ namespaces = {
 }
 
 # Prepare output CSV:
-fieldnames = ["Timestamp", "Type", "AvisID", "Adgangstype", "Udgivelsestidspunkt", "Udgivelsesnummer",
+fieldnames = ["Timestamp", "Type", "Avis", "Adgangstype", "Udgivelsestidspunkt", "Udgivelsesnummer",
               "Sidenummer", "Sektion", "Klient", "schacHomeOrganization", "eduPersonPrimaryAffiliation",
               "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
               "SBIPRoleMapper", "MediestreamFullAccess", "UUID"]
@@ -162,42 +168,34 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         outputLine["Klient"] = entry["remote_ip"]
 
+        # currently only caching shortFormat field, not complete response (including familiyId).
         if doms_id in doms_ids_seen:
             shortFormat = doms_ids_seen[doms_id]
         else:
             # {search.document.query:"pageUUID:
-# \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
-# pageUUID:\"doms_aviser_page:uuid:f2816832-7bd4-4353-a763-ad9eff91cf09
-# \"",
-# search.document.maxrecords:"20", search.document.startindex:"0",
-# search.document.resultfields:"pageUUID, shortformat",
-# solrparam.facet:"false",
-# group:"true",
-# group.field:"pageUUID",
-# search.document.collectdocids:"false"}
+            # \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
+            # pageUUID:\"doms_aviser_page:uuid:f2816832-7bd4-4353-a763-ad9eff91cf09
+            # \"",
+            # search.document.maxrecords:"20", search.document.startindex:"0",
+            # search.document.resultfields:"pageUUID, shortformat",
+            # solrparam.facet:"false",
+            # group:"true",
+            # group.field:"pageUUID",
+            # search.document.collectdocids:"false"}
 
             query = {}
             query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +doms_id + "\""
             query["search.document.maxrecords"] = "20"
             query["search.document.startindex"] = "0"
-            query["search.document.resultfields"] = "pageUUID, shortformat"
+            query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
             query["solrparam.facet"] = "false"
             query["group"] = "true"
             query["group.field"] = "pageUUID"
             query["search.document.collectdocids"] = "false"
 
             queryJSON = simplejson.dumps(query)
-
-            url_core = doms_url + "?method=directJSON&" + urllib.urlencode({"json" : queryJSON})
-
-            core_body = opener.open(url_core)
-            core_body_text = core_body.read()
-            core_body.close()
-            core = ET.fromstring(core_body_text)
-            soapNS = {"soapenv":"http://schemas.xmlsoap.org/soap/envelope/",
-                          "ns1":"http://statsbiblioteket.dk/summa/search"}
-            core_body_text = core.xpath("/soapenv:Envelope/soapenv:Body/directJSONResponse/ns1:directJSONReturn/text()",namespaces=soapNS)[0]
-            # print(core_body_text)
+            core_body_text = client.service.directJSON(queryJSON)
+            # print(core_body_text.encode(encoding))
 
             core = ET.parse(BytesIO(bytes(bytearray(core_body_text, encoding='utf-8'))))
             shortFormat = (core.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
@@ -205,11 +203,11 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         # TODO fix for pdf downloads also, where not all these fields might exist
         # print(ET.tostring(shortFormat))
-        outputLine["AvisID"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces)[0]
-        outputLine["Udgivelsestidspunkt"] = shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces)[0]
-        outputLine["Udgivelsesnummer"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces)[0]
+        outputLine["Avis"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces) or [""])[0]
+        outputLine["Udgivelsestidspunkt"] = (shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces) or [""])[0]
+        outputLine["Udgivelsesnummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces) or [""])[0]
         outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
-        outputLine["Sidenummer"] = shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces)[0]
+        outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
 
         # credentials
         creds = entry["userAttributes"]

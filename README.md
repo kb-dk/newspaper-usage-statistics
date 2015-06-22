@@ -15,7 +15,7 @@ sample-logs/thumbnails.log file.
 
 For IntelliJ see http://stackoverflow.com/a/24769264/53897
 
-For Ubuntu 15.04 "sudo apt-get install python-simplejson" is needed.
+For Ubuntu 15.04 "sudo apt-get install python-simplejson python-suds" is needed.
 
 /tra 2015-06-19
 
