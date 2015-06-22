@@ -1,8 +1,9 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python2
 
-# Jira issue NO-154.  Enrich mediastream player log with DOMS meta data.
+# https://sbprojects.statsbiblioteket.dk/jira/browse/MSAVIS-4 - post process statistics log.
 
-from __future__ import print_function
+
+from __future__ import print_function # for stderr
 
 from lxml import etree as ET
 import ConfigParser
@@ -16,7 +17,6 @@ import time
 import cgi
 import cgitb
 import urllib2
-import urllib
 from io import StringIO, BytesIO
 import glob
 import string
@@ -24,14 +24,14 @@ import suds
 
 # 
 
-config_file_name = "../../statistics.py.cfg"
+config_file_name = "../../statistics.py.cfg" # outside web root.
+
+encoding = "utf-8" # What to use for output
 
 # -----
 
-#cgitb.enable() # TODO ENABLE THIS WHEN CLI TESTS DONE. web page feedback in case of problems
+cgitb.enable() # ENABLE THIS WHEN CLI TESTS DONE. web page feedback in case of problems
 parameters = cgi.FieldStorage()
-
-encoding = "utf-8" # What to convert non-ASCII chars to.
 
 absolute_config_file_name = os.path.abspath(config_file_name)
 if not os.path.exists(absolute_config_file_name):
@@ -45,11 +45,10 @@ config.read(config_file_name)
 
 # --
 
-mediestream_wsdl = config.get("cgi", "mediestream_wsdl") # .../fedora/
+mediestream_wsdl = config.get("cgi", "mediestream_wsdl")
 
 # https://fedorahosted.org/suds/wiki/Documentation
 client = suds.client.Client(mediestream_wsdl)
-print(client)
 
 # --
 
@@ -58,15 +57,15 @@ re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 
 # The type of resource to get
 
+# TODO:  REMOVE DEBUG OF PARAMETERS.
 for i in parameters.keys():
-    print(parameters[i].value)
+    print(i + "=" + parameters[i].value)
+
 
 if "type" in parameters:
     requiredType = parameters["type"]
 else:
     requiredType = ""
-
-statistics_file_pattern = config.get("cgi", "statistics_file_name_pattern")
 
 if "fromDate" in parameters:
     start_str = parameters["fromDate"].value # "2013-06-15"
@@ -77,6 +76,8 @@ if "toDate" in parameters:
     end_str = parameters["toDate"].value
 else:
     end_str = "2015-07-01"
+
+statistics_file_pattern = config.get("cgi", "statistics_file_name_pattern")
 
 # http://stackoverflow.com/a/2997846/53897 - 10:00 is to avoid timezone issues in general.
 start_date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(start_str + " 10:00", '%Y-%m-%d %H:%M')))
@@ -94,7 +95,7 @@ namespaces = {
 }
 
 # Prepare output CSV:
-fieldnames = ["Timestamp", "Type", "Avis", "Adgangstype", "Udgivelsestidspunkt", "Udgivelsesnummer",
+fieldnames = ["Timestamp", "Type", "AvisID", "Avis", "Adgangstype", "Udgivelsestidspunkt", "Udgivelsesnummer",
               "Sidenummer", "Sektion", "Klient", "schacHomeOrganization", "eduPersonPrimaryAffiliation",
               "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
               "SBIPRoleMapper", "MediestreamFullAccess", "UUID"]
@@ -102,7 +103,6 @@ fieldnames = ["Timestamp", "Type", "Avis", "Adgangstype", "Udgivelsestidspunkt",
 print("Content-type: text/csv")
 print("Content-disposition: attachment; filename=stat-" + start_str + "-" + end_str + ".csv")
 print("")
-
 
 result_file = sys.stdout
 
@@ -112,7 +112,7 @@ result_dict_writer = csv.DictWriter(result_file, fieldnames, delimiter="\t")
 header = dict(zip(result_dict_writer.fieldnames, result_dict_writer.fieldnames))
 result_dict_writer.writerow(header)
 
-doms_ids_seen = {} # DOMS lookup cache, id is key
+summa_resource_cache = {} # DOMS lookup cache, id is key
 uniqueIDs = {} # ticket/domsID combos we have already handled.
 
 for statistics_file_name in glob.iglob(statistics_file_pattern):
@@ -144,20 +144,20 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         outputLine = {}
 
-        #They are all from this collection
+        # They are all from this collection
         outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
 
-        #If not correct type, ignore
+        # If not correct type, ignore
         if requiredType != "" and not requiredType == entry["resource_type"]:
             continue
 
         outputLine["Adgangstype"] = entry["resource_type"]
 
-        doms_id = entry["resource_id"]
-        outputLine["UUID"] = doms_id
+        resource_id = entry["resource_id"]
+        outputLine["UUID"] = resource_id
 
-        #If this ticket/domsId have been seen before ignore.
-        uniqueID = doms_id + entry["ticket_id"]
+        # If this ticket/domsId have been seen before ignore.
+        uniqueID = resource_id + entry["ticket_id"]
         if uniqueID in uniqueIDs:
             continue
         else:
@@ -169,8 +169,8 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
         outputLine["Klient"] = entry["remote_ip"]
 
         # currently only caching shortFormat field, not complete response (including familiyId).
-        if doms_id in doms_ids_seen:
-            shortFormat = doms_ids_seen[doms_id]
+        if resource_id in summa_resource_cache:
+            summa_resource = summa_resource_cache[resource_id]
         else:
             # {search.document.query:"pageUUID:
             # \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
@@ -184,7 +184,7 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             # search.document.collectdocids:"false"}
 
             query = {}
-            query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +doms_id + "\""
+            query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +resource_id + "\""
             query["search.document.maxrecords"] = "20"
             query["search.document.startindex"] = "0"
             query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
@@ -194,15 +194,19 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             query["search.document.collectdocids"] = "false"
 
             queryJSON = simplejson.dumps(query)
-            core_body_text = client.service.directJSON(queryJSON)
-            # print(core_body_text.encode(encoding))
+            summa_resource_text = client.service.directJSON(queryJSON)
+            # print(summa_resource_text.encode(encoding))
 
-            core = ET.parse(BytesIO(bytes(bytearray(core_body_text, encoding='utf-8'))))
-            shortFormat = (core.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
-            doms_ids_seen[doms_id] = shortFormat
+            summa_resource = ET.parse(BytesIO(bytes(bytearray(summa_resource_text, encoding='utf-8'))))
+            summa_resource_cache[resource_id] = summa_resource
+
+        # -- ready to extract information
+
+        shortFormat = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
 
         # TODO fix for pdf downloads also, where not all these fields might exist
         # print(ET.tostring(shortFormat))
+        outputLine["AvisID"] = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='familyId']/text()") or [""])[0]
         outputLine["Avis"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsestidspunkt"] = (shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsesnummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces) or [""])[0]
