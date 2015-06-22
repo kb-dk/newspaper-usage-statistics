@@ -30,7 +30,7 @@ encoding = "utf-8" # What to use for output
 
 # -----
 
-cgitb.enable() # ENABLE THIS WHEN CLI TESTS DONE. web page feedback in case of problems
+#cgitb.enable() # ENABLE THIS WHEN CLI TESTS DONE. web page feedback in case of problems
 parameters = cgi.FieldStorage()
 
 absolute_config_file_name = os.path.abspath(config_file_name)
@@ -184,13 +184,13 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             # search.document.collectdocids:"false"}
 
             query = {}
-            query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +resource_id + "\""
+            query["search.document.query"] = "editionUUID:\"doms_aviser_edition:uuid:" +resource_id + "\""
             query["search.document.maxrecords"] = "20"
             query["search.document.startindex"] = "0"
             query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
             query["solrparam.facet"] = "false"
             query["group"] = "true"
-            query["group.field"] = "pageUUID"
+            query["group.field"] = "editionUUID"
             query["search.document.collectdocids"] = "false"
 
             queryJSON = simplejson.dumps(query)
@@ -210,8 +210,9 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
         outputLine["Avis"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsestidspunkt"] = (shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsesnummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces) or [""])[0]
-        outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
-        outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
+        #De foelgende skal ikke vaere med for Download
+        #outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
+        #outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
 
         # credentials
         creds = entry["userAttributes"]
