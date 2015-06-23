@@ -156,17 +156,21 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         resource_id = entry["resource_id"]
 
+        downloadPDF = entry["resource_type"] == "Download"
+
         # If this ticket/domsId have been seen before ignore.
-        uniqueID = resource_id + entry["ticket_id"]
+        uniqueID = resource_id + " " + entry["ticket_id"] + " " + str(downloadPDF)
         if uniqueID in previously_seen_uniqueID:
             continue
-
-        previously_seen_uniqueID.add(uniqueID)
+        else:
+            previously_seen_uniqueID.add(uniqueID)
 
         # -- ask summa for additional information (with a cache)
 
-        if resource_id in summa_resource_cache:
-            summa_resource = summa_resource_cache[resource_id]
+        summa_resource_cache_key = resource_id + " " + str(downloadPDF)
+
+        if summa_resource_cache_key in summa_resource_cache:
+            summa_resource = summa_resource_cache[summa_resource_cache_key]
         else:
             # {search.document.query:"pageUUID:
             # \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
@@ -179,24 +183,35 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             # group.field:"pageUUID",
             # search.document.collectdocids:"false"}
 
-            query = {}
-            query["search.document.query"] = "editionUUID:\"doms_aviser_edition:uuid:" +resource_id + "\""
-            query["search.document.maxrecords"] = "20"
-            query["search.document.startindex"] = "0"
-            query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
-            query["solrparam.facet"] = "false"
-            query["group"] = "true"
-            query["group.field"] = "editionUUID"
-            query["search.document.collectdocids"] = "false"
+            if downloadPDF:
+                query = {}
+                query["search.document.query"] = "editionUUID:\"doms_aviser_edition:uuid:" +resource_id + "\""
+                query["search.document.maxrecords"] = "20"
+                query["search.document.startindex"] = "0"
+                query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
+                query["solrparam.facet"] = "false"
+                query["group"] = "true"
+                query["group.field"] = "editionUUID"
+                query["search.document.collectdocids"] = "false"
+            else:
+                query = {}
+                query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +resource_id + "\""
+                query["search.document.maxrecords"] = "20"
+                query["search.document.startindex"] = "0"
+                query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
+                query["solrparam.facet"] = "false"
+                query["group"] = "true"
+                query["group.field"] = "pageUUID"
+                query["search.document.collectdocids"] = "false"
 
             queryJSON = simplejson.dumps(query)
             summa_resource_text = client.service.directJSON(queryJSON)
             # print(summa_resource_text.encode(encoding))
 
             summa_resource = ET.parse(BytesIO(bytes(bytearray(summa_resource_text, encoding='utf-8'))))
-            summa_resource_cache[resource_id] = summa_resource
+            summa_resource_cache[summa_resource_cache_key] = summa_resource
 
-        # -- ready to extract information.
+        # --
 
         shortFormat = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
 
@@ -216,29 +231,11 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         outputLine["Klient"] = entry["remote_ip"]
 
-
-
-        # TODO fix for pdf downloads also, where not all these fields might exist
         # print(ET.tostring(shortFormat))
         outputLine["AvisID"] = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='familyId']/text()") or [""])[0]
         outputLine["Avis"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsestidspunkt"] = (shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsesnummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces) or [""])[0]
-        #De foelgende skal ikke vaere med for Download
-        #outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
-        #outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
-
-        # credentials
-        # creds = entry["userAttributes"]
-
-        # for cred in ["schacHomeOrganization", "eduPersonPrimaryAffiliation",
-        #              "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
-        #              "xSBIPRoleMapper", "MediestreamFullAccess"]:
-        #     if creds and cred in creds:
-        #         # flatten the list
-        #         outputLine[cred] = ", ".join(e for e in creds[cred])
-        #     else:
-        #         outputLine[cred] = ""
 
         outputLine["schacHomeOrganization"] = ", ".join(e for e in entry["userAttributes"].get("schacHomeOrganization",{}))
         outputLine["eduPersonPrimaryAffiliation"] = ", ".join(e for e in entry["userAttributes"].get("eduPersonPrimaryAffiliation",{}))
@@ -247,6 +244,11 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
         outputLine["eduPersonTargetedID"] = ", ".join(e for e in entry["userAttributes"].get("eduPersonTargetedID",{}))
         outputLine["SBIPRoleMapper"] = ", ".join(e for e in entry["userAttributes"].get("SBIPRoleMapper",{}))
         outputLine["MediestreamFullAccess"] = ", ".join(e for e in entry["userAttributes"].get("MediestreamFullAccess",{}))
+
+        if not downloadPDF:
+            # Does not make sense on editions
+            outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
+            outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
 
         encodedOutputLine = dict((key, outputLine[key].encode(encoding)) for key in outputLine.keys())
         result_dict_writer.writerow(encodedOutputLine)
