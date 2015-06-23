@@ -17,9 +17,8 @@ import time
 import cgi
 import cgitb
 import urllib2
-from io import StringIO, BytesIO
+from io import BytesIO
 import glob
-import string
 import suds
 
 # 
@@ -30,8 +29,19 @@ encoding = "utf-8" # What to use for output
 
 # -----
 
-cgitb.enable() # ENABLE THIS WHEN CLI TESTS DONE. web page feedback in case of problems
-parameters = cgi.FieldStorage()
+commandLine = len(sys.argv) > 0 # script name is always #0
+
+if commandLine:
+    # parse command line arguments on form "fromDate=2015-03-03" as map
+    parameters = {}
+    for arg in sys.argv[1:]:
+        keyvalue = arg.partition("=")
+        if (keyvalue[2])>0:
+            parameters[keyvalue[0]] = keyvalue[2]
+else:
+    # we are a cgi script
+    cgitb.enable()
+    parameters = cgi.FieldStorage()
 
 absolute_config_file_name = os.path.abspath(config_file_name)
 if not os.path.exists(absolute_config_file_name):
@@ -48,6 +58,7 @@ config.read(config_file_name)
 mediestream_wsdl = config.get("cgi", "mediestream_wsdl")
 
 # https://fedorahosted.org/suds/wiki/Documentation
+# Crashing here indicates that the WSDL->client process failed.
 client = suds.client.Client(mediestream_wsdl)
 
 # --
@@ -59,7 +70,7 @@ re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 
 # TODO:  REMOVE DEBUG OF PARAMETERS.
 for i in parameters.keys():
-    print(i + "=" + parameters[i].value)
+    print(i + "=" + parameters.get(i))
 
 
 if "type" in parameters:
@@ -68,23 +79,20 @@ else:
     requiredType = ""
 
 if "fromDate" in parameters:
-    start_str = parameters["fromDate"].value # "2013-06-15"
+    start_str = parameters["fromDate"] # "2013-06-15"
 else:
     start_str = "2013-06-01"
 
 if "toDate" in parameters:
-    end_str = parameters["toDate"].value
+    end_str = parameters["toDate"]
 else:
     end_str = "2015-07-01"
 
 statistics_file_pattern = config.get("cgi", "statistics_file_name_pattern")
 
 # http://stackoverflow.com/a/2997846/53897 - 10:00 is to avoid timezone issues in general.
-start_date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(start_str + " 10:00", '%Y-%m-%d %H:%M')))
-end_date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(end_str + " 10:00", '%Y-%m-%d %H:%M')))
-
-# generate dates. note:  range(0,1) -> [0] hence the +1
-dates = [start_date + datetime.timedelta(days = x) for x in range(0,(end_date - start_date).days + 1)]
+start_date = datetime.date.fromtimestamp(time.mktime(time.strptime(start_str + " 10:00", '%Y-%m-%d %H:%M')))
+end_date = datetime.date.fromtimestamp(time.mktime(time.strptime(end_str + " 10:00", '%Y-%m-%d %H:%M')))
 
 handler = urllib2.HTTPHandler()
 opener = urllib2.build_opener(handler)
@@ -100,39 +108,36 @@ fieldnames = ["Timestamp", "Type", "AvisID", "Avis", "Adgangstype", "Udgivelsest
               "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
               "SBIPRoleMapper", "MediestreamFullAccess", "UUID"]
 
-print("Content-type: text/csv")
-print("Content-disposition: attachment; filename=stat-" + start_str + "-" + end_str + ".csv")
-print("")
+if not commandLine:
+    print("Content-type: text/csv")
+    print("Content-disposition: attachment; filename=stat-" + start_str + "-" + end_str + ".csv")
+    print("")
 
 result_file = sys.stdout
 
-result_dict_writer = csv.DictWriter(result_file, fieldnames, delimiter="\t")
+result_dict_writer = csv.DictWriter(result_file, fieldnames, delimiter="\t" )
 # Inlined result_dict_writer.writeheader() - not present in 2.4.
 # Writes out a row where each column name has been put in the corresponding column 
 header = dict(zip(result_dict_writer.fieldnames, result_dict_writer.fieldnames))
 result_dict_writer.writerow(header)
 
 summa_resource_cache = {} # DOMS lookup cache, id is key
-uniqueIDs = {} # ticket/domsID combos we have already handled.
+previously_seen_uniqueID = set() # only process ticket/domsID combos once
 
 for statistics_file_name in glob.iglob(statistics_file_pattern):
 
-    # FIXME: Silently skip older logfiles.
     if os.path.isfile(statistics_file_name) == False:
         continue
 
     statistics_file = open(statistics_file_name, "rb")
-    splitString = ": "
 
     for line in statistics_file:
 
-        # Thu Jun 18 15:46:09 2015: {"resource_id":"cca6e5a6-a635-49f0-8f26-0e05ac9dd8c2",...
-        splitPosition = string.find(line, splitString)
+        # Mon Jun 22 15:28:02 2015: {"resource_id":"...","remote_ip":"...","userAttributes":{...},"dateTime":1434979682,"ticket_id":"...","resource_type":"Download"}
 
-        if (splitPosition == -1): # ignore bad log lines
-            continue
+        lineParts = line.partition(": ")
 
-        json = line[splitPosition + len(splitString):]
+        json = lineParts[2]
 
         try:
             entry = simplejson.loads(json)
@@ -140,37 +145,32 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             print("Bad JSON skipped: ", json, file=sys.stderr)
             continue # next line
 
-        # -- ready to generate output
+        # -- line to be considered?
 
-        outputLine = {}
+        entryDate = datetime.date.fromtimestamp(entry["dateTime"])
+        if not start_date <= entryDate <= end_date:
+            continue
 
-        # They are all from this collection
-        outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
-
-        # If not correct type, ignore
         if requiredType != "" and not requiredType == entry["resource_type"]:
             continue
 
-        outputLine["Adgangstype"] = entry["resource_type"]
-
         resource_id = entry["resource_id"]
-        outputLine["UUID"] = resource_id
+
+        downloadPDF = entry["resource_type"] == "Download"
 
         # If this ticket/domsId have been seen before ignore.
-        uniqueID = resource_id + entry["ticket_id"]
-        if uniqueID in uniqueIDs:
+        uniqueID = resource_id + " " + entry["ticket_id"] + " " + str(downloadPDF)
+        if uniqueID in previously_seen_uniqueID:
             continue
         else:
-            uniqueIDs[uniqueID] = uniqueID # only key matters.
+            previously_seen_uniqueID.add(uniqueID)
 
-        log_entry_date_time = entry["dateTime"]
-        outputLine["Timestamp"] =  datetime.datetime.fromtimestamp(log_entry_date_time).strftime("%Y-%m-%dT%H:%M:%S")
+        # -- ask summa for additional information (with a cache)
 
-        outputLine["Klient"] = entry["remote_ip"]
+        summa_resource_cache_key = resource_id + " " + str(downloadPDF)
 
-        # currently only caching shortFormat field, not complete response (including familiyId).
-        if resource_id in summa_resource_cache:
-            summa_resource = summa_resource_cache[resource_id]
+        if summa_resource_cache_key in summa_resource_cache:
+            summa_resource = summa_resource_cache[summa_resource_cache_key]
         else:
             # {search.document.query:"pageUUID:
             # \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
@@ -183,52 +183,74 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             # group.field:"pageUUID",
             # search.document.collectdocids:"false"}
 
-            query = {}
-            query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +resource_id + "\""
-            query["search.document.maxrecords"] = "20"
-            query["search.document.startindex"] = "0"
-            query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
-            query["solrparam.facet"] = "false"
-            query["group"] = "true"
-            query["group.field"] = "pageUUID"
-            query["search.document.collectdocids"] = "false"
+            if downloadPDF:
+                query = {}
+                query["search.document.query"] = "editionUUID:\"doms_aviser_edition:uuid:" +resource_id + "\""
+                query["search.document.maxrecords"] = "20"
+                query["search.document.startindex"] = "0"
+                query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
+                query["solrparam.facet"] = "false"
+                query["group"] = "true"
+                query["group.field"] = "editionUUID"
+                query["search.document.collectdocids"] = "false"
+            else:
+                query = {}
+                query["search.document.query"] = "pageUUID:\"doms_aviser_page:uuid:" +resource_id + "\""
+                query["search.document.maxrecords"] = "20"
+                query["search.document.startindex"] = "0"
+                query["search.document.resultfields"] = "pageUUID, shortformat, familyId"
+                query["solrparam.facet"] = "false"
+                query["group"] = "true"
+                query["group.field"] = "pageUUID"
+                query["search.document.collectdocids"] = "false"
 
             queryJSON = simplejson.dumps(query)
             summa_resource_text = client.service.directJSON(queryJSON)
             # print(summa_resource_text.encode(encoding))
 
             summa_resource = ET.parse(BytesIO(bytes(bytearray(summa_resource_text, encoding='utf-8'))))
-            summa_resource_cache[resource_id] = summa_resource
+            summa_resource_cache[summa_resource_cache_key] = summa_resource
 
-        # -- ready to extract information
+        # --
 
         shortFormat = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
 
-        # TODO fix for pdf downloads also, where not all these fields might exist
+        # -- ready to generate output
+
+        outputLine = {}
+
+        # They are all from this collection
+        outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
+
+
+        outputLine["Adgangstype"] = entry["resource_type"]
+
+        outputLine["UUID"] = resource_id
+
+        outputLine["Timestamp"] = datetime.datetime.fromtimestamp(entry["dateTime"]).strftime("%Y-%m-%dT%H:%M:%S")
+
+        outputLine["Klient"] = entry["remote_ip"]
+
         # print(ET.tostring(shortFormat))
         outputLine["AvisID"] = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='familyId']/text()") or [""])[0]
         outputLine["Avis"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperTitle/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsestidspunkt"] = (shortFormat.xpath("rdf:RDF/rdf:Description/dateTime/text()",namespaces=namespaces) or [""])[0]
         outputLine["Udgivelsesnummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperEdition/text()",namespaces=namespaces) or [""])[0]
-        outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
-        outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
 
-        # credentials
-        creds = entry["userAttributes"]
+        outputLine["schacHomeOrganization"] = ", ".join(e for e in entry["userAttributes"].get("schacHomeOrganization",{}))
+        outputLine["eduPersonPrimaryAffiliation"] = ", ".join(e for e in entry["userAttributes"].get("eduPersonPrimaryAffiliation",{}))
+        outputLine["eduPersonScopedAffiliation"] = ", ".join(e for e in entry["userAttributes"].get("eduPersonScopedAffiliation",{}))
+        outputLine["eduPersonPrincipalName"] = ", ".join(e for e in entry["userAttributes"].get("eduPersonPrincipalName",{}))
+        outputLine["eduPersonTargetedID"] = ", ".join(e for e in entry["userAttributes"].get("eduPersonTargetedID",{}))
+        outputLine["SBIPRoleMapper"] = ", ".join(e for e in entry["userAttributes"].get("SBIPRoleMapper",{}))
+        outputLine["MediestreamFullAccess"] = ", ".join(e for e in entry["userAttributes"].get("MediestreamFullAccess",{}))
 
-        for cred in ["schacHomeOrganization", "eduPersonPrimaryAffiliation",
-                     "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
-                     "SBIPRoleMapper", "MediestreamFullAccess"]:
-            if creds and cred in creds:
-                # creds[cred] is list, encode each entry, and join them as a single comma-separated string.
-                outputLine[cred] = ", ".join(e.encode(encoding) for e in creds[cred])
-            else:
-                outputLine[cred] = ""
+        if not downloadPDF:
+            # Does not make sense on editions
+            outputLine["Sektion"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperSection/text()",namespaces=namespaces) or [""])[0]
+            outputLine["Sidenummer"] = (shortFormat.xpath("rdf:RDF/rdf:Description/newspaperPage/text()",namespaces=namespaces) or [""])[0]
 
-        encodedOutputLine = {}
-        for key in outputLine.keys():
-            encodedOutputLine[key] = outputLine[key].encode(encoding)
-
+        encodedOutputLine = dict((key, outputLine[key].encode(encoding)) for key in outputLine.keys())
         result_dict_writer.writerow(encodedOutputLine)
 
     statistics_file.close()

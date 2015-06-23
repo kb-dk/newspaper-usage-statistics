@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<responsecollection
+        timing="responsemerger.total:0|aggregator.searchandmergeall:22|solr.buildquery:0|avisersolr.reportedtime:5|avisersolr.buildresponses.total:1|solr.buildquery:0|sbsolr.reportedtime:8|sbsolr.buildresponses.total:0"
+        machine="mars">
+    <response name="DocumentResponse">
+        <documentresult filters=""
+                        query="editionUUID:&quot;doms_aviser_edition:uuid:5cdcf638-00f4-47f2-97e8-edf32b3cf6db&quot;^0.7573837"
+                        startIndex="0" maxRecords="20" reverseSort="true" fields="" searchTime="8"
+                        timing="solr.buildquery:0|avisersolr.reportedtime:5|avisersolr.buildresponses.total:1|solr.buildquery:0|sbsolr.reportedtime:8|sbsolr.buildresponses.total:0"
+                        hitCount="493">
+            <group groupValue="doms_aviser_edition:uuid:5cdcf638-00f4-47f2-97e8-edf32b3cf6db" numFound="493"
+                   score="0.0">
+                <record score="0.0" sortValue="0.0" id="not_defined_in_recordID" source="avisersolr">
+                    <field name="pageUUID">doms_aviser_page:uuid:96a78dd7-b57c-4ebc-a650-a08f97604a72</field>
+                    <field name="shortformat">
+                        <shortrecord>
+                            <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <rdf:Description>
+                                    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Larsen den sværeste — men
+                                        sjoveste
+                                    </dc:title>
+                                    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/"/>
+                                    <dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">1974</dc:date>
+                                    <newspaperTitle>Aktuelt (1959-1978)</newspaperTitle>
+                                    <dateTime>1974-12-22</dateTime>
+                                    <dateTimeIso>1974-12-22T00:00:00Z</dateTimeIso>
+                                    <newspaperEdition>1</newspaperEdition>
+                                    <newspaperSection>1. sektion</newspaperSection>
+                                    <newspaperPage>22</newspaperPage>
+                                    <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">
+                                        doms_newspaperCollection:uuid:96a78dd7-b57c-4ebc-a650-a08f97604a72
+                                    </dc:identifier>
+                                    <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">
+                                        uuid:96a78dd7-b57c-4ebc-a650-a08f97604a72
+                                    </dc:identifier>
+                                    <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="da">avisartikel
+                                    </dc:type>
+                                    <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">newspaper
+                                        article
+                                    </dc:type>
+                                </rdf:Description>
+                            </rdf:RDF>
+                        </shortrecord>
+                    </field>
+                    <field name="familyId">aktuelt</field>
+                </record>
+            </group>
+        </documentresult>
+    </response>
+</responsecollection>
