@@ -1,35 +1,40 @@
 #!/usr/bin/env python2
 
 # https://sbprojects.statsbiblioteket.dk/jira/browse/MSAVIS-4 - post process statistics log.
-
+#
+# For development purposes invoke as
+#
+#     python2 statistics.py fromDate=2013-07-01 toDate=2015-12-31
+#
+# The extra arguments trigger non-CGI output, and provides parameters to the script.
+#
 
 from __future__ import print_function # for stderr
 
+from io import BytesIO
 from lxml import etree as ET
 import ConfigParser
-import csv
-import datetime
-import simplejson
-import os
-import re
-import sys
-import time
 import cgi
 import cgitb
-import urllib2
-from io import BytesIO
+import csv
+import datetime
 import glob
+import os
+import re
+import simplejson
 import suds
+import sys
+import time
 
 # 
 
-config_file_name = "../../statistics.py.cfg" # outside web root.
+config_file_name = "../../newspaper_statistics.py.cfg" # outside web root.
 
 encoding = "utf-8" # What to use for output
 
-# -----
+# ---
 
-commandLine = len(sys.argv) > 0 # script name is always #0
+commandLine = len(sys.argv) > 1 # script name is always #0
 
 if commandLine:
     # parse command line arguments on form "fromDate=2015-03-03" as map
@@ -43,35 +48,25 @@ else:
     cgitb.enable()
     parameters = cgi.FieldStorage()
 
+
+# -- load configuration file.  If not found, provide absolute path looked at.
+
 absolute_config_file_name = os.path.abspath(config_file_name)
 if not os.path.exists(absolute_config_file_name):
     # http://stackoverflow.com/a/14981125/53897
     print("Configuration file not found: ", absolute_config_file_name, file=sys.stderr)
     exit(1)
 
-
 config = ConfigParser.SafeConfigParser()
 config.read(config_file_name)
 
-# --
+
+# -- create web service client from WSDL url. see https://fedorahosted.org/suds/wiki/Documentation
 
 mediestream_wsdl = config.get("cgi", "mediestream_wsdl")
-
-# https://fedorahosted.org/suds/wiki/Documentation
-# Crashing here indicates that the WSDL->client process failed.
 client = suds.client.Client(mediestream_wsdl)
 
-# --
-
-# Example: d68a0380-012a-4cd8-8e5b-37adf6c2d47f (optionally trailed by a ".fileending")
-re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\.[a-zA-Z0-9]*)?$")
-
-# The type of resource to get
-
-# TODO:  REMOVE DEBUG OF PARAMETERS.
-for i in parameters.keys():
-    print(i + "=" + parameters.get(i))
-
+# -- extract and setup
 
 if "type" in parameters:
     requiredType = parameters["type"]
@@ -88,21 +83,21 @@ if "toDate" in parameters:
 else:
     end_str = "2015-07-01"
 
+# Example: d68a0380-012a-4cd8-8e5b-37adf6c2d47f (optionally trailed by a ".fileending")
+re_doms_id_from_url = re.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\.[a-zA-Z0-9]*)?$")
+
 statistics_file_pattern = config.get("cgi", "statistics_file_name_pattern")
 
 # http://stackoverflow.com/a/2997846/53897 - 10:00 is to avoid timezone issues in general.
 start_date = datetime.date.fromtimestamp(time.mktime(time.strptime(start_str + " 10:00", '%Y-%m-%d %H:%M')))
 end_date = datetime.date.fromtimestamp(time.mktime(time.strptime(end_str + " 10:00", '%Y-%m-%d %H:%M')))
 
-handler = urllib2.HTTPHandler()
-opener = urllib2.build_opener(handler)
-
 namespaces = {
     "rdf":"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "dc":"http://purl.org/dc/elements/1.1/"
 }
 
-# Prepare output CSV:
+# Titles for columns in CSV:
 fieldnames = ["Timestamp", "Type", "AvisID", "Avis", "Adgangstype", "Udgivelsestidspunkt", "Udgivelsesnummer",
               "Sidenummer", "Sektion", "Klient", "schacHomeOrganization", "eduPersonPrimaryAffiliation",
               "eduPersonScopedAffiliation", "eduPersonPrincipalName", "eduPersonTargetedID",
@@ -116,12 +111,15 @@ if not commandLine:
 result_file = sys.stdout
 
 result_dict_writer = csv.DictWriter(result_file, fieldnames, delimiter="\t" )
-# Inlined result_dict_writer.writeheader() - not present in 2.4.
-# Writes out a row where each column name has been put in the corresponding column 
+# Writes out a row where each column name has been put in the corresponding column.  If
+# Danish characters show up in a header, these must be encoded too.
 header = dict(zip(result_dict_writer.fieldnames, result_dict_writer.fieldnames))
 result_dict_writer.writerow(header)
 
-summa_resource_cache = {} # DOMS lookup cache, id is key
+summa_resource_cache = {}
+summa_resource_cache_max = 10000 # number of items to cache, when reached cache is flushed.
+
+
 previously_seen_uniqueID = set() # only process ticket/domsID combos once
 
 for statistics_file_name in glob.iglob(statistics_file_pattern):
@@ -143,11 +141,12 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             entry = simplejson.loads(json)
         except simplejson.scanner.JSONDecodeError as e:
             print("Bad JSON skipped: ", json, file=sys.stderr)
-            continue # next line
+            continue
 
-        # -- line to be considered?
+            # -- line to be considered?
 
         entryDate = datetime.date.fromtimestamp(entry["dateTime"])
+
         if not start_date <= entryDate <= end_date:
             continue
 
@@ -158,8 +157,10 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         downloadPDF = entry["resource_type"] == "Download"
 
-        # If this ticket/domsId have been seen before ignore.
+        # -- only process each ticket/domsID once (deep zoom makes _many_ requests).
+
         uniqueID = resource_id + " " + entry["ticket_id"] + " " + str(downloadPDF)
+
         if uniqueID in previously_seen_uniqueID:
             continue
         else:
@@ -172,17 +173,6 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
         if summa_resource_cache_key in summa_resource_cache:
             summa_resource = summa_resource_cache[summa_resource_cache_key]
         else:
-            # {search.document.query:"pageUUID:
-            # \"doms_aviser_page:uuid:c5ea9975-dbc6-49ca-a68c-5c27fefae407\" OR
-            # pageUUID:\"doms_aviser_page:uuid:f2816832-7bd4-4353-a763-ad9eff91cf09
-            # \"",
-            # search.document.maxrecords:"20", search.document.startindex:"0",
-            # search.document.resultfields:"pageUUID, shortformat",
-            # solrparam.facet:"false",
-            # group:"true",
-            # group.field:"pageUUID",
-            # search.document.collectdocids:"false"}
-
             if downloadPDF:
                 query = {}
                 query["search.document.query"] = "editionUUID:\"doms_aviser_edition:uuid:" +resource_id + "\""
@@ -211,6 +201,10 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
             summa_resource = ET.parse(BytesIO(bytes(bytearray(summa_resource_text, encoding='utf-8'))))
             summa_resource_cache[summa_resource_cache_key] = summa_resource
 
+            # for very large log files the cache needs to be emptied once in a while.
+            if len(summa_resource_cache) > summa_resource_cache_max:
+                summa_resource_cache = {}
+
         # --
 
         shortFormat = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
@@ -219,15 +213,13 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         outputLine = {}
 
-        # They are all from this collection
         outputLine["Type"] = "info:fedora/doms:Newspaper_Collection"
-
 
         outputLine["Adgangstype"] = entry["resource_type"]
 
         outputLine["UUID"] = resource_id
 
-        outputLine["Timestamp"] = datetime.datetime.fromtimestamp(entry["dateTime"]).strftime("%Y-%m-%dT%H:%M:%S")
+        outputLine["Timestamp"] = datetime.datetime.fromtimestamp(entry["dateTime"]).strftime("%Y-%m-%d %H:%M:%S")
 
         outputLine["Klient"] = entry["remote_ip"]
 
