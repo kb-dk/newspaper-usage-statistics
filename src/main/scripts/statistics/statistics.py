@@ -65,7 +65,7 @@ config.read(config_file_name)
 # -- create web service client from WSDL url. see https://fedorahosted.org/suds/wiki/Documentation
 
 mediestream_wsdl = config.get("cgi", "mediestream_wsdl")
-client = suds.client.Client(mediestream_wsdl)
+mediestream_webservice = suds.client.Client(mediestream_wsdl)
 
 # -- extract and setup
 
@@ -201,7 +201,7 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
                 query["search.document.collectdocids"] = "false"
 
             queryJSON = simplejson.dumps(query)
-            summa_resource_text = client.service.directJSON(queryJSON)
+            summa_resource_text = mediestream_webservice.service.directJSON(queryJSON)
             # print(summa_resource_text.encode(encoding))
 
             summa_resource = ET.parse(BytesIO(bytes(bytearray(summa_resource_text, encoding='utf-8'))))
@@ -252,3 +252,4 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
         result_dict_writer.writerow(encodedOutputLine)
 
     statistics_file.close()
+    # result_file.close() - can't on sys.stdout.
