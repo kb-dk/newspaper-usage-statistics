@@ -46,7 +46,8 @@ if commandLine:
 else:
     # we are a cgi script
     cgitb.enable()
-    parameters = cgi.FieldStorage()
+    fieldStorage = cgi.FieldStorage()
+    parameters = dict((key, fieldStorage.getvalue(key)) for key in fieldStorage.keys())
 
 
 # -- load configuration file.  If not found, provide absolute path looked at.
@@ -97,6 +98,8 @@ namespaces = {
     "dc":"http://purl.org/dc/elements/1.1/"
 }
 
+# -- go
+
 # Titles for columns in CSV:
 fieldnames = ["Timestamp", "Type", "AvisID", "Avis", "Adgangstype", "Udgivelsestidspunkt", "Udgivelsesnummer",
               "Sidenummer", "Sektion", "Klient", "schacHomeOrganization", "eduPersonPrimaryAffiliation",
@@ -104,8 +107,11 @@ fieldnames = ["Timestamp", "Type", "AvisID", "Avis", "Adgangstype", "Udgivelsest
               "SBIPRoleMapper", "MediestreamFullAccess", "UUID"]
 
 if not commandLine:
+    filename = "newspaper_stat-" + start_str + "-" + end_str;
+    if requiredType != "":
+        filename = filename + "-" + requiredType;
     print("Content-type: text/csv")
-    print("Content-disposition: attachment; filename=stat-" + start_str + "-" + end_str + ".csv")
+    print("Content-disposition: attachment; filename=" + filename + ".csv")
     print("")
 
 result_file = sys.stdout

@@ -50,9 +50,9 @@
       $(document).ready(function(){
         $("#fromDate").datepicker({format: "yyyy-mm-dd"});
         $("#toDate").datepicker({format: "yyyy-mm-dd"});
-        var getThumbnailStatistics = $("#getThumbnailStatistics");
+        var getThumbnailStatistics = $("#getThumbnailsStatistics");
         getThumbnailStatistics.attr("href", myBaseUrl);
-        getThumbnailStatistics.click(function(event) {updateLink(getThumbnailStatistics,"Thumbnail");});
+        getThumbnailStatistics.click(function(event) {updateLink(getThumbnailsStatistics,"Thumbnails");});
         var getStreamStatistics = $("#getStreamStatistics");
         getStreamStatistics.attr("href", myBaseUrl);
         getStreamStatistics.click(function(event) {updateLink(getStreamStatistics,"Stream");});
