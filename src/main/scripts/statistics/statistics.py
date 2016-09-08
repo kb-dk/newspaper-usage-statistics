@@ -145,7 +145,7 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         try:
             entry = simplejson.loads(json)
-        except simplejson.scanner.JSONDecodeError as e:
+        except:
             print("Bad JSON skipped: ", json, file=sys.stderr)
             continue
 
