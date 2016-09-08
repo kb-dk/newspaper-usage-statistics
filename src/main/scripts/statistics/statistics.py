@@ -25,8 +25,7 @@ import simplejson
 import suds
 import sys
 import time
-
-# 
+#
 
 config_file_name = "../../newspaper_statistics.py.cfg" # outside web root.
 
@@ -213,7 +212,10 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         # --
 
-        shortFormat = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
+        try:
+            shortFormat = summa_resource.xpath("/responsecollection/response/documentresult/group/record/field[@name='shortformat']/shortrecord")[0]
+        except:
+            shortFormat = ET.Element("empty")
 
         # -- ready to generate output
 
