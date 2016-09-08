@@ -25,6 +25,7 @@ import simplejson
 import suds
 import sys
 import time
+import suds.client
 #
 
 config_file_name = "../../newspaper_statistics.py.cfg" # outside web root.
