@@ -32,3 +32,17 @@ python-suds"
 
 /tra 2015-06-24
 
+To make a release:
+
+* Update changelog
+* Tag the version in git
+* Tar up and gzip the following
+    - src/main/scripts/statistics
+    - README.md
+    - CHANGELOG.md
+
+    in a folder called newspaper-usage-statistics-<version>
+* Name the resulting file newspaper-usage-statistics-<version>.tar.gz
+* Place the file in newspaper@achernar:releases/
+
+kfc 2016-09-13
