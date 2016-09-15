@@ -21,7 +21,10 @@ import datetime
 import glob
 import os
 import re
-import simplejson
+try:	# try for the unbundled version
+  import simplejson
+except: # no? use the builtin
+  import json as simplejson
 import suds
 import sys
 import time
