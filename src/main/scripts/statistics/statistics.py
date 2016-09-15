@@ -68,6 +68,12 @@ config.read(config_file_name)
 # -- create web service client from WSDL url. see https://fedorahosted.org/suds/wiki/Documentation
 
 mediestream_wsdl = config.get("cgi", "mediestream_wsdl")
+# We need to disable the cache to avoid jumping through SELinux hoops but
+# suds is a pain in the a** and has no way to properly disable caching
+# This just crudely redefines the default ObjectCache() to be NoCache()
+def ObjectCache(**kw):
+    return suds.cache.NoCache()
+suds.client.ObjectCache = ObjectCache
 mediestream_webservice = suds.client.Client(mediestream_wsdl)
 
 # -- extract and setup
