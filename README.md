@@ -1,3 +1,22 @@
+MOVED!
+===
+
+This project has been merged into
+https://github.com/statsbiblioteket/newspaper-fastcgi-ticket-checker
+to facilitate easier integration checking.  
+
+This project location is left as is for archival reasons and will
+eventually be deleted.  Do not use it for new development
+
+/tra 2017-09-25
+
+
+
+
+
+
+
+
 Usage statistics for the newspaper project.
 ===
 
