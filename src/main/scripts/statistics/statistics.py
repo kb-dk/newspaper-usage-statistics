@@ -21,12 +21,15 @@ import datetime
 import glob
 import os
 import re
-import simplejson
+try:	# try for the unbundled version
+  import simplejson
+except: # no? use the builtin
+  import json as simplejson
 import suds
 import sys
 import time
-
-# 
+import suds.client
+#
 
 config_file_name = "../../newspaper_statistics.py.cfg" # outside web root.
 
@@ -65,6 +68,12 @@ config.read(config_file_name)
 # -- create web service client from WSDL url. see https://fedorahosted.org/suds/wiki/Documentation
 
 mediestream_wsdl = config.get("cgi", "mediestream_wsdl")
+# We need to disable the cache to avoid jumping through SELinux hoops but
+# suds is a pain in the a** and has no way to properly disable caching
+# This just crudely redefines the default ObjectCache() to be NoCache()
+def ObjectCache(**kw):
+    return suds.cache.NoCache()
+suds.client.ObjectCache = ObjectCache
 mediestream_webservice = suds.client.Client(mediestream_wsdl)
 
 # -- extract and setup
@@ -145,7 +154,7 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         try:
             entry = simplejson.loads(json)
-        except simplejson.scanner.JSONDecodeError as e:
+        except:
             print("Bad JSON skipped: ", json, file=sys.stderr)
             continue
 
@@ -213,7 +222,10 @@ for statistics_file_name in glob.iglob(statistics_file_pattern):
 
         # --
 
-        shortFormat = (summa_resource.xpath("/responsecollection/response/documentresult/group/record[1]/field[@name='shortformat']/shortrecord"))[0]
+        try:
+            shortFormat = summa_resource.xpath("/responsecollection/response/documentresult/group/record/field[@name='shortformat']/shortrecord")[0]
+        except:
+            shortFormat = ET.Element("empty")
 
         # -- ready to generate output
 
